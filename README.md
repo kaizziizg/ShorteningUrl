@@ -22,6 +22,8 @@ before build image,you must set environment variable
 ENV ShortUrlServer={}
 ENV ShortUrlUsername={}
 ENV ShortUrlPassword={}
+ENV INSTANCE_CONNECTION_NAME = {}
+<!-- you can find INSTANCE_CONNECTION_NAME from your cloud sql table -->
 ```
 
 ```
