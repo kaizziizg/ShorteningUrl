@@ -23,8 +23,9 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
     msg = 'This Url doesnt work'
     res.json({ success, msg })
   } else {
-    const shortUrl: string = 'https://' + req.hostname + '/' + getHash(originalUrl)
-    addShortUrl(originalUrl, shortUrl, 'noOwner', 30)
+    const hashURL: string = getHash(originalUrl)
+    const shortUrl: string = 'https://' + req.hostname + '/' + hashURL
+    addShortUrl(originalUrl, hashURL, 'noOwner', 30)
     res.json({ success, originalUrl, shortUrl })
   }
 })

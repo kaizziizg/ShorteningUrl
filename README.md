@@ -1,5 +1,19 @@
 # ShorteningUrl
 a simple ShorteningUrl Service with Node.js,React.js
+## WEB API
+> POST `/shorten`
+
+    Request:
+        Content-Type: x-www-form-urlencoded
+        Key/Value : url/Oriurl
+    Response:
+        {
+            "success": true,
+            "originalUrl": "https://myapollo.com.tw/blog/docker-env/",
+            "shortUrl": "https://127.0.0.1/AxY6E2"
+        }
+
+
 
 ## Docker
 before build image,you must set environment variable
