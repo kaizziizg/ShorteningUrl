@@ -5,7 +5,7 @@ import { addShortUrl, getOriUrl, isShortUrlExist } from '../utils/db.js'
 
 const shortUrlRouter = express.Router()
 
-shortUrlRouter.get('/shorten', async (req, res): Promise<void> => {
+shortUrlRouter.get('/api/shorten', async (req, res): Promise<void> => {
   let originalUrl: string = req.query.url as string
 
   let success: boolean = true
@@ -35,7 +35,8 @@ shortUrlRouter.get('/shorten', async (req, res): Promise<void> => {
 
 shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
   let originalUrl: string = req.body.url
-  console.log(req.body)
+  let owner: string = req.body.owner
+  if (owner === undefined) { owner = 'noOwner' }
   let success: boolean = true
   let msg: string = ' '
   originalUrl = checkProtocol(originalUrl)
@@ -53,7 +54,8 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
       const hashURL: string = getHash(originalUrl)
       const shortUrl: string = 'https://' + req.hostname + '/' + hashURL
       const clickTime = 0
-      addShortUrl(originalUrl, hashURL, 'noOwner', 30)
+
+      addShortUrl(originalUrl, hashURL, owner, 30)
       res.json({ success, originalUrl, shortUrl, clickTime })
     } else {
       const msg: string = 'The ShortUrl is already created'

@@ -23,6 +23,10 @@ signRouter.post('/signIn', async (req, res): Promise<void> => {
       signed: true, // use the sign
       maxAge: 60 * 60 * 1000 // expires after 1 hr
     })
+    res.cookie('username', `${signInRes.username}`, {
+      signed: false, // use the sign
+      maxAge: 60 * 60 * 1000 // expires after 1 hr
+    })
     res.cookie('isLogin', true, {
       signed: false, // use the sign
       maxAge: 60 * 60 * 1000 // expires after 1 hr
@@ -43,7 +47,7 @@ signRouter.get('/logout', (req, res) => {
       console.log(err)
     }
   })
-  res.redirect('/#/')
+  res.redirect('/')
 })
 
 export default signRouter

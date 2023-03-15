@@ -8,7 +8,7 @@ import session from 'express-session'
 import checkURLRouter from './routes/checkURL.js'
 import shortUrlRouter from './routes/shortUrlRouter.js'
 import signRouter from './routes/signRouter.js'
-
+import manageRouter from './routes/manageRouter.js'
 const app = express()
 app.use(cors())
 app.use(logger('dev'))
@@ -29,6 +29,7 @@ app.use(session({
 
 app.use(checkURLRouter)
 app.use(signRouter)
+app.use(manageRouter)
 app.use(shortUrlRouter)
 
 app.use(express.static(path.join('./', 'public')))

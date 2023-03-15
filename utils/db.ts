@@ -3,7 +3,6 @@ import bcrypt from 'bcrypt'
 import { sequelize, saltRounds } from './db/db_init.js'
 import Users from './db/db_user.js'
 import Urls from './db/db_urls.js'
-// import { INTEGER } from 'sequelize'
 
 async function SignUp (_username: string, _email: string, _password: string): Promise<any> {
   const res: any = {}
@@ -98,4 +97,13 @@ async function isShortUrlExist (_oriUrl: string): Promise<any> {
   }
 }
 
-export { SignIn, SignUp, addShortUrl, getOriUrl, isShortUrlExist }
+async function getShortUrls (_username: string): Promise<any> {
+  const urls = await Urls.findAll({ where: { owner: _username } })
+  if (urls === null) {
+    return 'not found'
+  } else {
+    return urls
+  }
+}
+
+export { SignIn, SignUp, addShortUrl, getOriUrl, isShortUrlExist, getShortUrls }
