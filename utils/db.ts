@@ -43,7 +43,6 @@ async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, 
 }
 
 async function getOriUrl (_shortURL: string): Promise<string> {
-  
   const urls = await Urls.findOne({ where: { shortUrl: _shortURL } })
   if (urls === null) {
     return 'Not found!'
