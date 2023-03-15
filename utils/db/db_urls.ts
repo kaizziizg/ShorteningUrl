@@ -29,7 +29,12 @@ const Urls = sequelize.define('urls', {
   lifeTime: {
     type: DataTypes.DATE,
     allowNull: false
+  },
+  clickTime: {
+    type: DataTypes.INTEGER,
+    allowNull: true
   }
+
 }, {
 
 })

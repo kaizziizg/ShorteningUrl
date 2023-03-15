@@ -12,12 +12,12 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 
-app.use(checkURLRouter)
-app.use(shortUrlRouter)
-
 app.get('/', (req, res) => {
   res.send('Hello, World!')
 })
+
+app.use(checkURLRouter)
+app.use(shortUrlRouter)
 
 app.use(express.static(path.join('./', 'public')))
 

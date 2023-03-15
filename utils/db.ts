@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt'
 import { sequelize, saltRounds } from './db/db_init.js'
 import Users from './db/db_user.js'
 import Urls from './db/db_urls.js'
+import { INTEGER } from 'sequelize'
 
 function registerUser (_username: string, _email: string, _password: string): boolean {
   let isRegister: boolean = false
@@ -42,12 +43,25 @@ async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, 
 }
 
 async function getOriUrl (_shortURL: string): Promise<string> {
+  
   const urls = await Urls.findOne({ where: { shortUrl: _shortURL } })
   if (urls === null) {
     return 'Not found!'
   } else {
+    await urls.update({ clickTime: Number(urls.dataValues.clickTime) + 1 })
+    await urls.save()
+    console.log(urls.dataValues.clickTime)
     return urls.dataValues.oriUrl
   }
 }
 
-export { registerUser, addShortUrl, getOriUrl }
+async function isShortUrlExist (_oriUrl: string): Promise<string> {
+  const urls = await Urls.findOne({ where: { oriUrl: _oriUrl } })
+  if (urls === null) {
+    return 'not found'
+  } else {
+    return urls.dataValues.shortUrl
+  }
+}
+
+export { registerUser, addShortUrl, getOriUrl, isShortUrlExist }
