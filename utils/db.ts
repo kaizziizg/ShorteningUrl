@@ -54,12 +54,12 @@ async function getOriUrl (_shortURL: string): Promise<string> {
   }
 }
 
-async function isShortUrlExist (_oriUrl: string): Promise<string> {
+async function isShortUrlExist (_oriUrl: string): Promise<any> {
   const urls = await Urls.findOne({ where: { oriUrl: _oriUrl } })
   if (urls === null) {
     return 'not found'
   } else {
-    return urls.dataValues.shortUrl
+    return urls.dataValues
   }
 }
 

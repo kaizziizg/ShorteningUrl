@@ -47,16 +47,19 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
     res.json({ success, msg })
   } else {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    const ShortUrlExist: string = await isShortUrlExist(originalUrl)
-    if (ShortUrlExist === 'not found') {
+    const ShortUrlExist: any = await isShortUrlExist(originalUrl)
+    console.log(ShortUrlExist.shortUrl)
+    if (ShortUrlExist.shortUrl === undefined) {
       const hashURL: string = getHash(originalUrl)
       const shortUrl: string = 'https://' + req.hostname + '/' + hashURL
+      const clickTime = 0
       addShortUrl(originalUrl, hashURL, 'noOwner', 30)
-      res.json({ success, originalUrl, shortUrl })
+      res.json({ success, originalUrl, shortUrl, clickTime })
     } else {
       const msg: string = 'The ShortUrl is already created'
-      const shortUrl: string = 'https://' + req.hostname + '/' + ShortUrlExist
-      res.json({ success, msg, originalUrl, shortUrl })
+      const shortUrl: string = 'https://' + req.hostname + '/' + String(ShortUrlExist.shortUrl)
+      const clickTime: number = ShortUrlExist.clickTime
+      res.json({ success, msg, originalUrl, shortUrl, clickTime })
     }
   }
 })

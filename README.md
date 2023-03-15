@@ -63,5 +63,6 @@ docker run -p 7777:3000 short-url
 
 ## Other Feature
 - [ ] Short-Url Self-modified
-- [ ] Generate QR-Code
+- [ ] Generate QR-Code (generate at frontend)
+    * [qrcode](https://www.npmjs.com/package/qrcode)
 - [ ] Short-Url period and can extend the period
