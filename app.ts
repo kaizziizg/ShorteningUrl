@@ -18,5 +18,4 @@ app.use(checkURLRouter)
 app.use(shortUrlRouter)
 
 app.use(express.static(path.join('./', 'public')))
-
 export default app

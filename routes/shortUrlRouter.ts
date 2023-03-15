@@ -61,11 +61,17 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
   }
 })
 
-shortUrlRouter.get('/:shortUrl', async (req, res) => {
+shortUrlRouter.get('/:shortUrl', async (req, res, next) => {
   // Note : getOriUrl(url) will add one clickTime
   const shortUrl = req.params.shortUrl
-  const OriUrl: string = await getOriUrl(shortUrl)
-  res.redirect(`${OriUrl}`)
+
+  if (shortUrl === 'Not found!' || shortUrl.length !== 6) {
+    next()
+  } else {
+    console.log(shortUrl)
+    const OriUrl: string = await getOriUrl(shortUrl)
+    res.redirect(`${OriUrl}`)
+  }
 })
 
 export default shortUrlRouter

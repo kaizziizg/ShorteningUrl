@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import { sequelize, saltRounds } from './db/db_init.js'
 import Users from './db/db_user.js'
 import Urls from './db/db_urls.js'
-import { INTEGER } from 'sequelize'
+// import { INTEGER } from 'sequelize'
 
 function registerUser (_username: string, _email: string, _password: string): boolean {
   let isRegister: boolean = false
