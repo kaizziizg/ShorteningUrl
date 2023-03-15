@@ -1,5 +1,5 @@
 import express from 'express'
-import {CheckURLExist} from '../utils/checkURLExist.js'
+import { CheckURLExist } from '../utils/checkURLExist.js'
 import getHash from '../utils/hashGenetator.js'
 const checkURLRouter = express.Router()
 

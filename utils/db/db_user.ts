@@ -2,8 +2,8 @@ import { DataTypes } from 'sequelize'
 import { sequelize } from './db_init.js'
 
 const Users = sequelize.define('users', {
-  id: {
-    type: DataTypes.INTEGER,
+  username: {
+    type: DataTypes.STRING,
     allowNull: false,
     primaryKey: true
   },

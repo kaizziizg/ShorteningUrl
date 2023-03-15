@@ -5,24 +5,59 @@ import Users from './db/db_user.js'
 import Urls from './db/db_urls.js'
 // import { INTEGER } from 'sequelize'
 
-function registerUser (_username: string, _email: string, _password: string): boolean {
-  let isRegister: boolean = false
-  void sequelize.sync().then(async () => {
-    Users.create({
+async function SignUp (_username: string, _email: string, _password: string): Promise<any> {
+  const res: any = {}
+  res.username = _username
+  res.email = _email
+  res.password = _password
+
+  const user = await Users.findOne({ where: { email: _email } })
+  if (user === null) {
+    const users = await Users.create({
       username: _username,
       email: _email,
       password: await bcrypt.hash(_password, saltRounds),
       registrationTime: getUTCCurrentTime()
     }).then(() => {
+      res.msg = 'successfully created User!!'
       console.log('successfully created User!!')
-      isRegister = true
+      res.success = true
     }).catch((err) => {
+      res.msg = `error occur: ${err}`
       console.log('error occur')
       console.log(err)
-      isRegister = false
+      res.success = false
     })
-  })
-  return isRegister
+    return res
+  } else {
+    // already SignUp
+    res.msg = 'this email address is already SignUp'
+    res.success = false
+    return res
+  }
+}
+
+async function SignIn (_email: string, _password: string): Promise<any> {
+  let isSignIn: boolean = false
+  const res: any = {}
+  res.email = _email
+  res.password = _password
+  const user = await Users.findOne({ where: { email: _email } })
+
+  if (user === null) {
+    console.log(`${_email} is not register`)
+    res.success = false
+    res.username = ' '
+  } else {
+    res.username = user.dataValues.username
+    const hashPwd = user.dataValues.password
+    await bcrypt.compare(_password, hashPwd).then(function (result) {
+      isSignIn = result
+      res.success = result
+    })
+  }
+  res.msg = `${_email} login ${isSignIn}`
+  return res
 }
 
 async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, _liftTime: number): Promise<boolean> {
@@ -63,4 +98,4 @@ async function isShortUrlExist (_oriUrl: string): Promise<any> {
   }
 }
 
-export { registerUser, addShortUrl, getOriUrl, isShortUrlExist }
+export { SignIn, SignUp, addShortUrl, getOriUrl, isShortUrlExist }
