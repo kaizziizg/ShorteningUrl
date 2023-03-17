@@ -1,0 +1,14 @@
+html,
+body,
+#root {
+	padding: 0px !important;
+	margin: 0px !important;
+	height: 100vh !important;
+	width: 100% !important;
+}
+
+* {
+	text-decoration: none;
+	color: white;
+}
+

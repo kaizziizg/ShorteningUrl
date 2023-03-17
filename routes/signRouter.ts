@@ -41,6 +41,7 @@ signRouter.post('/signIn', async (req, res): Promise<void> => {
 signRouter.get('/logout', (req, res) => {
   // destroy session data
   res.clearCookie('user')
+  res.clearCookie('username')
   res.clearCookie('isLogin')
   req.session.destroy((err) => {
     if (err !== null) {

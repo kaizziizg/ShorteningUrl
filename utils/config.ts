@@ -6,10 +6,10 @@ const database: string = 'shortUrlService'
 const isGcpEnv: boolean = (process.env.isGcpEnv === 'true')
 
 if (isGcpEnv) {
-  console.log('Current Environment is GCP, Connect SQl with Unix sockets')
+  console.log('Current Environment is GCP, Connect SQL with Unix sockets')
   console.log(`env\n host: ${INSTANCE_CONNECTION_NAME}\n user: ${user}\n pwd: ${pwd}`)
 } else {
-  console.log('Current Environment is general, Connect SQl with TCP')
+  console.log('Current Environment is general, Connect SQL with TCP')
   console.log(`env\n host: ${host}\n user: ${user}\n pwd: ${pwd}`)
 }
 

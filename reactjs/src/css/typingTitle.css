@@ -1,0 +1,47 @@
+/* typing animation */
+@keyframes typing {
+	from {
+		width: 0;
+	}
+	to {
+		width: 22ch;
+	}
+}
+
+@keyframes blink-caret {
+	from,
+	to {
+		border-color: transparent;
+	}
+	50% {
+		border-color: currentColor;
+	}
+}
+
+@media only screen and (max-width: 475px) {
+	#description {
+		font-size: 1.8rem;
+	}
+}
+
+@media only screen and (min-width: 475px) {
+	#description {
+		font-size: 2.5rem;
+	}
+}
+
+
+#description {
+	margin: auto;
+	width: 22ch;
+	height: 1.25em;
+	border-right: 1px solid transparent;
+	animation: typing 3.5s steps(21, end), blink-caret 0.75s step-end infinite;
+	font-family: Consolas, Monaco !important;
+	word-break: break-all;
+	overflow: hidden;
+}
+
+#description b {
+	color: rgb(243, 201, 85);
+}

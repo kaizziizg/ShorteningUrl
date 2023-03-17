@@ -24,8 +24,8 @@ ENV ShortUrlUsername={}
 ENV ShortUrlPassword={}
 <!-- you can find INSTANCE_CONNECTION_NAME from your cloud sql table -->
 ENV INSTANCE_CONNECTION_NAME = {}
-<!-- isGcpEnv == true,connect MySQl with Unix domain socket -->
-<!-- isGcpEnv == false,connect MySQl with TCP -->
+<!-- isGcpEnv == true,connect MySQL with Unix domain socket -->
+<!-- isGcpEnv == false,connect MySQL with TCP -->
 ENV isGcpEnv = true/false
 ```
 
