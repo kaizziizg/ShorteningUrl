@@ -9,6 +9,7 @@ import checkURLRouter from './routes/checkURL.js'
 import shortUrlRouter from './routes/shortUrlRouter.js'
 import signRouter from './routes/signRouter.js'
 import manageRouter from './routes/manageRouter.js'
+import ogs from 'open-graph-scraper'
 
 const app = express()
 
@@ -40,8 +41,10 @@ app.use(session({
     maxAge: 60 * 60 * 1000
   }
 }))
-
+app.set('view engine', 'ejs')
+app.set('views', (path.join('./', 'views')))
 app.use(express.static(path.join('./', 'public')))
+
 app.use(checkURLRouter)
 app.use(signRouter)
 app.use(manageRouter)

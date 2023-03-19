@@ -59,14 +59,18 @@ async function SignIn (_email: string, _password: string): Promise<any> {
   return res
 }
 
-async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, _lifeTime: number): Promise<boolean> {
+async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, _lifeTime: number, _ogmTitle: string, _ogmDescription: string, _ogmImage: string): Promise<boolean> {
   let isAdd: boolean = false
-  console.log(`_oriUrl : ${_oriUrl} _shortURL : ${_shortURL}`)
+  // console.log(`_oriUrl : ${_oriUrl} _shortURL : ${_shortURL}`)
+  console.log(`收到${_oriUrl}`)
   const newUrl = await Urls.create({
     oriUrl: _oriUrl,
     shortUrl: _shortURL,
     owner: _owner,
-    lifeTime: getUTCLifeTime(_lifeTime)
+    lifeTime: getUTCLifeTime(_lifeTime),
+    ogmTitle: _ogmTitle,
+    ogmDescription: _ogmDescription,
+    ogmImage: _ogmImage
   }).then((res) => {
     isAdd = true
   }).catch((err) => {
@@ -84,7 +88,7 @@ async function getOriUrl (_shortURL: string): Promise<string> {
     await urls.update({ clickTime: Number(urls.dataValues.clickTime) + 1 })
     await urls.save()
     console.log(urls.dataValues.clickTime)
-    return urls.dataValues.oriUrl
+    return urls.dataValues
   }
 }
 

@@ -45,25 +45,77 @@ function resultTable() {
             >
               https://shorteningurl-eh4konhfta-de.a.run.app
             </Link>
-            <br />
-            <Button
-              variant="contained"
-              color="primary"
-              sx={{
-                marginTop: '1.5rem',
-              }}
-              onClick={CopyURL}
-            >
-              Copy URL
-            </Button>
-            <br />
-            <br />
-            clickTime
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{
+              marginTop: '1.5rem',
+            }}
+            onClick={CopyURL}
+          >
+            Copy URL
+          </Button>
+          <Typography
+            variant="h5"
+            align="center"
+            color="text.primary"
+          >
+            <p>clickTime</p>
+          </Typography>
+          <Typography
+            variant="h5"
+            align="center"
+            color="text.primary"
+            sx={{ mb: '1rem' }}
+          >
             <div id="clickTime">
               0
             </div>
-            <canvas id="qrcode" style={{ marginTop: '1rem' }} />
           </Typography>
+          <canvas id="qrcode" style={{ margin: 'auto' }} />
+          <Typography
+            variant="h4"
+            align="center"
+            color="text.primary"
+            sx={{ mt: '1rem' }}
+          >
+            Open Graph MetaData
+          </Typography>
+          <Typography
+            variant="h5"
+            align="center"
+            color="text.primary"
+            sx={{ m: '1rem' }}
+          >
+            Title
+          </Typography>
+          <div id="ogmTitle">
+            Oops...
+          </div>
+          <Typography
+            variant="h5"
+            align="center"
+            color="text.primary"
+            sx={{ m: '1rem' }}
+          >
+            Description
+          </Typography>
+          <div id="ogmDescription">
+            Oops...
+          </div>
+          <Typography
+            variant="h5"
+            align="center"
+            color="text.primary"
+            gutterBottom
+            sx={{ m: '1rem' }}
+          >
+            Image
+          </Typography>
+
+          <img id="ogmImage" src="" alt="Open Graph MetaData" style={{ margin: 'auto', width: '50%' }} />
+
         </Paper>
       </Container>
     </Box>
@@ -97,6 +149,9 @@ export default function Main() {
           document.querySelector('#shortURL').text = response.data.shortUrl;
           document.querySelector('#shortURL').href = response.data.shortUrl;
           document.querySelector('#clickTime').innerText = response.data.clickTime;
+          document.querySelector('#ogmTitle').innerText = response.data.ogmTitle;
+          document.querySelector('#ogmDescription').innerText = response.data.ogmDescription;
+          document.querySelector('#ogmImage').src = response.data.ogmImage;
           QRCodeGen(response.data.shortUrl);
         }
       })
