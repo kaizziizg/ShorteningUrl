@@ -10,7 +10,7 @@ if (isGcpEnv) {
   console.log(`env\n host: ${INSTANCE_CONNECTION_NAME}\n user: ${user}\n pwd: ${pwd}`)
 } else {
   console.log('Current Environment is general, Connect SQL with TCP')
-  console.log(`env\n host: ${host}\n user: ${user}\n pwd: ${pwd}`)
+  console.log(`SQL env\n host: ${host}\n user: ${user}\n pwd: ${pwd}`)
 }
 
 export { host, user, pwd, database, INSTANCE_CONNECTION_NAME, isGcpEnv }

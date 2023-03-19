@@ -2,6 +2,7 @@ import axios from 'axios';
 import qs from 'qs';
 // eslint-disable-next-line import/no-extraneous-dependencies, import/no-unresolved
 import QRCode from 'qrcode';
+import cookie from 'cookie';
 import { serverIP } from '../config';
 
 const CopyURL = () => {
@@ -16,7 +17,8 @@ const QRCodeGen = (url) => {
 };
 
 const getShortenURL = () => {
-  const data = { url: document.querySelector('#url').value };
+  const cookies = cookie.parse(document.cookie);
+  const data = { url: document.querySelector('#url').value, owner: cookies.username };
   const qsdata = qs.stringify(data);
   document.querySelector('#shortURL').text = 'Process...';
   axios

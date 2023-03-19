@@ -26,8 +26,7 @@ export default function SignIn() {
       password: data.get('password'),
     };
     const qsdata = qs.stringify(signData);
-
-    axios.post(`${serverIP}/signIn`, qsdata).then((res) => {
+    axios.post(`${serverIP}/signIn`, qsdata, { withCredentials: true }).then((res) => {
       console.log(res.data);
       if (res.data.success === true) {
         alert('Login Success');

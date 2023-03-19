@@ -32,7 +32,6 @@ function Title(mg) {
 
 function Header() {
   const cookies = cookie.parse(document.cookie);
-  let AppBarRightbutton;
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -41,9 +40,22 @@ function Header() {
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-  let pages = ['Support', 'SignUp', 'SignIn'];
+  let pages = ['Main', 'Support', 'SignUp', 'SignIn'];
+  let user;
   if (cookies.isLogin === 'true') {
-    pages = ['Support', 'Management', 'Logout'];
+    pages = ['Main', 'Support', 'Management', 'Logout'];
+    user = (
+      <Typography
+        variant="h6"
+        sx={{
+          display: {
+            marginBlock: 'auto', fontWeight: 700, lineHeight: '100%', marginRight: '0.5rem',
+          },
+        }}
+      >
+        {`Hi, ${cookies.username}`}
+      </Typography>
+    );
   }
   return (
     <AppBar position="static" elevation={0} sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
@@ -56,14 +68,15 @@ function Header() {
 
         >
           {Title('')}
+          {user}
+          <Box display="flex" alignItems="center" justifyContent="center">
 
-          <Box>
             {pages.map((page) => (
               <Button variant="outlined" sx={{ my: 1, mx: 1.5 }} key={page}>
                 <Link to={`/${page}`} key={page}>{(page).toUpperCase()}</Link>
               </Button>
             ))}
-            {AppBarRightbutton}
+
           </Box>
 
         </Box>

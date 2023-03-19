@@ -5,7 +5,9 @@ const debug = Debug('url-shortening:server')
 const port = normalizePort(process.env.PORT !== null ? '3000' : process.env.PORT)
 app.set('port', port)
 const server = http.createServer(app)
-server.listen(port)
+app.listen(port, () => {
+  console.log(`Listening on port ${port}`)
+})
 server.on('error', onError)
 server.on('listening', onListening)
 

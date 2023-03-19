@@ -17,18 +17,19 @@ signRouter.post('/signIn', async (req, res): Promise<void> => {
   const email: string = req.body.email
   const password: string = req.body.password
   const signInRes: any = await SignIn(email, password)
+  console.log(signInRes.username)
   if (signInRes.success === true) {
     req.session.user = signInRes.username
     res.cookie('user', `${req.session.user}`, {
-      signed: true, // use the sign
+      signed: true,
       maxAge: 60 * 60 * 1000 // expires after 1 hr
     })
     res.cookie('username', `${signInRes.username}`, {
-      signed: false, // use the sign
+      signed: false,
       maxAge: 60 * 60 * 1000 // expires after 1 hr
     })
     res.cookie('isLogin', true, {
-      signed: false, // use the sign
+      signed: false,
       maxAge: 60 * 60 * 1000 // expires after 1 hr
     })
   }
@@ -44,11 +45,12 @@ signRouter.get('/logout', (req, res) => {
   res.clearCookie('username')
   res.clearCookie('isLogin')
   req.session.destroy((err) => {
-    if (err !== null) {
+    if (err !== undefined) {
       console.log(err)
     }
   })
-  res.redirect('/')
+  const home: string = req.headers.referer as string
+  res.redirect(home)
 })
 
 export default signRouter
