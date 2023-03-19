@@ -181,7 +181,7 @@ export default function Management() {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - datas.length) : 0;
 
   React.useEffect(() => {
-    handleLoadingPopup();
+    // handleLoadingPopup();
     axios.get(`${serverIP}/api/shortUrls`, { params: { username: cookies.username } }).then((res) => {
       setData(res.data);
       const Dict = {};
