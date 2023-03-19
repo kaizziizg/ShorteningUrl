@@ -23,7 +23,13 @@ export default function AlertDialogSlide(props) {
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleCancel = () => {
+    setOpen(false);
+  };
+  const handleConfirm = () => {
+    if (props !== 'you must select aleast one') {
+      props.handle();
+    }
     setOpen(false);
   };
   const msg = () => {
@@ -49,7 +55,7 @@ export default function AlertDialogSlide(props) {
         open={open}
         TransitionComponent={Transition}
         keepMounted
-        onClose={handleClose}
+        onClose={handleCancel}
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>{props.title}</DialogTitle>
@@ -62,8 +68,8 @@ export default function AlertDialogSlide(props) {
 
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={props.handle}>Continue</Button>
+          <Button onClick={handleCancel}>Cancel</Button>
+          <Button onClick={handleConfirm}>Continue</Button>
         </DialogActions>
       </Dialog>
     </div>

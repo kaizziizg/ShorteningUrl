@@ -35,8 +35,10 @@ shortUrlRouter.get('/api/shorten', async (req, res): Promise<void> => {
 
 shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
   let originalUrl: string = req.body.url
-  let owner: string = req.body.owner
-  if (owner === undefined) { owner = 'noOwner' }
+  let owner: string = 'noOwner'
+  if (req.session.user === req.body.owner) {
+    owner = req.body.owner
+  }
   let success: boolean = true
   let msg: string = ' '
   originalUrl = checkProtocol(originalUrl)
@@ -54,7 +56,6 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
       const hashURL: string = getHash(originalUrl)
       const shortUrl: string = 'https://' + req.hostname + '/' + hashURL
       const clickTime = 0
-
       addShortUrl(originalUrl, hashURL, owner, 30)
       res.json({ success, originalUrl, shortUrl, clickTime })
     } else {
@@ -70,7 +71,7 @@ shortUrlRouter.get('/:shortUrl', async (req, res, next) => {
   // Note : getOriUrl(url) will add one clickTime
   const shortUrl = req.params.shortUrl
 
-  if (shortUrl === 'Not found!' || shortUrl.length !== 6) {
+  if (shortUrl === 'Not found!') {
     next()
   } else {
     console.log(shortUrl)
