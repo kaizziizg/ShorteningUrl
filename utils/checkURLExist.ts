@@ -5,6 +5,7 @@ async function CheckURLExist (url: string): Promise<boolean> {
   if (parse(url).domain === null) {
     return false
   }
+  console.log(parse(url).domain)
   const res: boolean = await urlExist(url)
   return res
 }

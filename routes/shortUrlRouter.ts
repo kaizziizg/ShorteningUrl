@@ -29,9 +29,9 @@ shortUrlRouter.get('/api/shorten', async (req, res): Promise<void> => {
         ogmTitle = result.ogmTitle
         ogmDescription = result.ogmDescription
         ogImage = result.ogImage.url
-        console.log(`ogmTitle : ${result.ogmTitle}`)
-        console.log(`ogmDescription : ${result.ogmDescription}`)
-        console.log(`ogImageURL : ${result.ogImage.url}`)
+        // console.log(`ogmTitle : ${result.ogmTitle}`)
+        // console.log(`ogmDescription : ${result.ogmDescription}`)
+        // console.log(`ogImageURL : ${result.ogImage.url}`)
       }).catch((err) => {
         console.log(err)
       })
@@ -54,6 +54,8 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
   if (req.session.user !== undefined && req.session.user === req.body.owner) {
     owner = req.body.owner
   }
+  console.log(req.session.user)
+  console.log(owner)
   let success: boolean = true
   let msg: string = ' '
   let shortUrl: string = ''
@@ -78,18 +80,17 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
         ogmDescription = result.ogDescription === undefined ? ' ' : result.ogDescription
         ogmImage = result.ogImage === undefined ? ' ' : result.ogImage.url
 
-        console.log(`ogmTitle : ${ogmTitle}`)
-        console.log(`ogmDescription : ${ogmDescription}`)
-        console.log(`ogImageURL : ${ogmImage}`)
+        // console.log(`ogmTitle : ${ogmTitle}`)
+        // console.log(`ogmDescription : ${ogmDescription}`)
+        // console.log(`ogImageURL : ${ogmImage}`)
       }).catch((err) => {
         console.log(err)
       })
     if (ShortUrlExist.shortUrl === undefined) {
-      console.log(`owner:${owner}`)
       const hashURL: string = getHash(originalUrl)
       shortUrl = 'https://' + req.hostname + '/' + hashURL
       clickTime = 0
-      addShortUrl(originalUrl, hashURL, 'noOwner', 30, ogmTitle, ogmDescription, ogmImage)
+      addShortUrl(originalUrl, hashURL, owner, 30, ogmTitle, ogmDescription, ogmImage)
       res.json({ success, originalUrl, shortUrl, clickTime, ogmTitle, ogmDescription, ogmImage })
     } else {
       const msg: string = 'The ShortUrl is already created'
@@ -98,7 +99,6 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
       ogmTitle = ShortUrlExist.ogmTitle
       ogmDescription = ShortUrlExist.ogmDescription
       ogmImage = ShortUrlExist.ogmImage
-      console.log(ShortUrlExist)
       res.json({ success, msg, ShortUrlExist })
     }
   }

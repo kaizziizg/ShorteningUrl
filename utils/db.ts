@@ -61,8 +61,6 @@ async function SignIn (_email: string, _password: string): Promise<any> {
 
 async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, _lifeTime: number, _ogmTitle: string, _ogmDescription: string, _ogmImage: string): Promise<boolean> {
   let isAdd: boolean = false
-  // console.log(`_oriUrl : ${_oriUrl} _shortURL : ${_shortURL}`)
-  console.log(`收到${_oriUrl}`)
   const newUrl = await Urls.create({
     oriUrl: _oriUrl,
     shortUrl: _shortURL,

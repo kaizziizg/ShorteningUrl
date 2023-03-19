@@ -139,8 +139,8 @@ export default function Main() {
     axios
       .post(`${serverIP}/shorten`, data)
       .then((response) => {
-        console.log(response.data.clickTime);
-        console.log(response.data.shortUrl);
+        // console.log(response.data.clickTime);
+        // console.log(response.data.shortUrl);
         if (response.data.clickTime === undefined) {
           document.querySelector('#shortURL').text = 'URL is Error,Please Re-check the URL';
           document.querySelector('#clickTime').innerText = 0;

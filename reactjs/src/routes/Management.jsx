@@ -120,6 +120,7 @@ export default function Management() {
       document.location.href = `${serverIP}/logout`;
     }).finally(() => {
       handleLoadingPopdown();
+      location.reload();
     });
   };
   const handleUpdate = (event) => {
@@ -164,6 +165,7 @@ export default function Management() {
       document.location.href = `${serverIP}/logout`;
     }).finally(() => {
       handleLoadingPopdown();
+      location.reload();
     });
   };
   const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -184,6 +186,7 @@ export default function Management() {
     // handleLoadingPopup();
     axios.get(`${serverIP}/api/shortUrls`, { params: { username: cookies.username } }).then((res) => {
       setData(res.data);
+      console.log(res.data);
       const Dict = {};
       for (let i = 0; i < res.data.length; i += 1) {
         Dict[res.data[i].shortUrl] = false;
@@ -192,8 +195,6 @@ export default function Management() {
       console.log(res.data);
     }).catch((err) => {
       document.location.href = `${serverIP}/logout`;
-    }).finally(() => {
-      handleLoadingPopdown();
     });
   }, []);
   if (datas === null) return (<div>Loading</div>);
@@ -263,7 +264,7 @@ export default function Management() {
                         {data.oriUrl}
                       </TableCell>
                       <TableCell align="right">
-                        <TextField error={error[data.shortUrl]} required id={`id${data.shortUrl}`} label="CustomizeURL" defaultValue={data.shortUrl} variant="standard" onChange={(handleTextField)} />
+                        <TextField error={error[`id${data.shortUrl}`]} required id={`id${data.shortUrl}`} label="CustomizeURL" defaultValue={data.shortUrl} variant="standard" onChange={(handleTextField)} />
                       </TableCell>
                       <TableCell align="right">{data.clickTime}</TableCell>
                       <TableCell align="right">{new Date(Date.parse(data.lifeTime)).toLocaleString()}</TableCell>
