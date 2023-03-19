@@ -6,7 +6,6 @@
 /* eslint-disable no-unused-vars */
 import * as React from 'react';
 import axios from 'axios';
-import qs from 'qs';
 import cookie from 'cookie';
 import {
   Checkbox, Box, TablePagination, TextField,
@@ -20,6 +19,7 @@ import Paper from '@mui/material/Paper';
 import { serverIP } from '../config';
 import EnhancedTableHead from '../components/EnhancedTableHead';
 import DialogYesNo from '../components/DialogYesNo';
+import Loading from '../components/Loading';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -45,6 +45,14 @@ function updateObjectKey(obj, key, value) {
 }
 
 export default function Management() {
+  const loadingRef = React.useRef();
+
+  const handleLoadingPopup = () => {
+    loadingRef.current.handleToggle();
+  };
+  const handleLoadingPopdown = () => {
+    loadingRef.current.handleClose();
+  };
   const cookies = cookie.parse(document.cookie);
   const [datas, setData] = React.useState(null);
   const [order, setOrder] = React.useState('asc');
@@ -101,12 +109,17 @@ export default function Management() {
     if (selected.length === 0) {
       console.log('no selection');
     }
-    const updateData = {
+    const deleteData = {
       username: cookies.username,
-      updateUrls: selected,
+      deleteUrls: selected,
     };
-    axios.post(`${serverIP}/updateUrl`, updateData).then((res) => {
+    handleLoadingPopup();
+    axios.post(`${serverIP}/delectUrl`, deleteData).then((res) => {
       console.log(res.data);
+    }).catch((err) => {
+      document.location.href = `${serverIP}/logout`;
+    }).finally(() => {
+      handleLoadingPopdown();
     });
   };
   const handleUpdate = (event) => {
@@ -114,19 +127,25 @@ export default function Management() {
       return;
     }
     const switchUrls = {};
-    selected.forEach((select) => { switchUrls[select] = document.querySelector(`#${select}`).value; });
+    selected.forEach((select) => { switchUrls[select] = document.querySelector(`#${`id${select}`}`).value; });
     const updateData = {
       username: cookies.username,
       updateUrls: switchUrls,
     };
+    handleLoadingPopup();
     axios.post(`${serverIP}/updateUrl`, updateData).then((res) => {
       console.log(res.data);
+    }).catch((err) => {
+      document.location.href = `${serverIP}/logout`;
+    }).finally(() => {
+      handleLoadingPopdown();
     });
   };
+
   const getModifiedUrl = () => {
     const msg = [];
     if (selected.length === 0) return msg;
-    selected.forEach((select) => msg.push(`${select} -> ${document.querySelector(`#${select}`).value}`));
+    selected.forEach((select) => msg.push(`${select} -> ${document.querySelector(`#id${select}`).value}`));
     return msg;
   };
 
@@ -134,12 +153,17 @@ export default function Management() {
     if (selected.length === 0) {
       console.log('no selection');
     }
-    const updateData = {
+    const refreshData = {
       username: cookies.username,
-      updateUrls: selected,
+      refreshUrls: selected,
     };
-    axios.post(`${serverIP}/updateUrl`, updateData).then((res) => {
+    handleLoadingPopup();
+    axios.post(`${serverIP}/refreshUrl`, refreshData).then((res) => {
       console.log(res.data);
+    }).catch((err) => {
+      document.location.href = `${serverIP}/logout`;
+    }).finally(() => {
+      handleLoadingPopdown();
     });
   };
   const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -147,8 +171,6 @@ export default function Management() {
   const handleTextField = (event) => {
     // eslint-disable-next-line prefer-destructuring
     const id = event.target.id;
-    console.log(error[id]);
-
     if (event.target.value.length < 6 || event.target.value.length > 10) {
       setError(updateObjectKey(error, id, true));
     } else {
@@ -159,6 +181,7 @@ export default function Management() {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - datas.length) : 0;
 
   React.useEffect(() => {
+    handleLoadingPopup();
     axios.get(`${serverIP}/api/shortUrls`, { params: { username: cookies.username } }).then((res) => {
       setData(res.data);
       const Dict = {};
@@ -166,6 +189,11 @@ export default function Management() {
         Dict[res.data[i].shortUrl] = false;
       }
       setError(Dict);
+      console.log(res.data);
+    }).catch((err) => {
+      document.location.href = `${serverIP}/logout`;
+    }).finally(() => {
+      handleLoadingPopdown();
     });
   }, []);
   if (datas === null) return (<div>Loading</div>);
@@ -173,6 +201,7 @@ export default function Management() {
 
   return (
     <Box sx={{ width: '80%', margin: 'auto' }}>
+      <Loading ref={loadingRef} />
       <Box sx={{
         width: '100%', mt: 2, display: 'flex',
       }}
@@ -212,7 +241,7 @@ export default function Management() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={data.oriUrl}
+                      key={data.shortUrl}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">
@@ -234,7 +263,7 @@ export default function Management() {
                         {data.oriUrl}
                       </TableCell>
                       <TableCell align="right">
-                        <TextField error={error[data.shortUrl]} required id={data.shortUrl} label="CustomizeURL" defaultValue={data.shortUrl} variant="standard" onChange={(handleTextField)} />
+                        <TextField error={error[data.shortUrl]} required id={`id${data.shortUrl}`} label="CustomizeURL" defaultValue={data.shortUrl} variant="standard" onChange={(handleTextField)} />
                       </TableCell>
                       <TableCell align="right">{data.clickTime}</TableCell>
                       <TableCell align="right">{new Date(Date.parse(data.lifeTime)).toLocaleString()}</TableCell>

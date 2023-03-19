@@ -1,19 +1,61 @@
-# ShorteningUrl
+# Shortening URL
 a simple ShorteningUrl Service with Node.js,React.js
-## WEB API
-> POST `/shorten`
+
+## WEB API Documentation
+> GET `/api/shorten`
+
+    | Parameter | Type   | Description             |
+    | --------- | ------ | ----------------------- |
+    | url       | string | The URL to be shortened |
 
     Request:
-        Content-Type: x-www-form-urlencoded
-        Key/Value : url/Oriurl
-    Response:
-        {
-            "success": true,
-            "originalUrl": "https://myapollo.com.tw/blog/docker-env/",
-            "shortUrl": "https://127.0.0.1/AxY6E2"
-        }
-...
+        Content-Type: application/json
 
+    Response:
+        Content-Type: application/json
+        success:
+            {
+                "success": true,
+                "originalUrl": "original_url",
+                "shortUrl": "shortened_url"
+            }
+        failure:
+            {
+                "success": false,
+                "msg": "The ShortUrl is already created"
+            }
+> POST  `/shorten`
+
+    | Parameter | Type   | Description             |
+    | --------- | ------ | ----------------------- |
+    | url       | string | The URL to be shortened |
+    | owner     | string | The creater of the URL  |
+
+    Request:
+        Content-Type: application/json
+
+    Response:
+        Content-Type: application/json
+        success:
+            {
+                "success": true,
+                "originalUrl": "original_url",
+                "shortUrl": "shortened_url",
+                "clickTime": 0
+            }
+        failure:
+            {
+                "success": false,
+                "msg": "The ShortUrl is already created"
+            }
+
+> POST  `/shorten`
+
+    | Parameter | Type   | Description             |
+    | --------- | ------ | ----------------------- |
+    | shortUrl  | string | The shortened URL       |
+    Response:
+        If the short URL is valid, the API will redirect to the original URL. If the short URL is not valid, the API will return a 404 error.
 
 ## Docker
 before build image,you must set environment variable
@@ -27,6 +69,13 @@ ENV INSTANCE_CONNECTION_NAME = {}
 <!-- isGcpEnv == true,connect MySQL with Unix domain socket -->
 <!-- isGcpEnv == false,connect MySQL with TCP -->
 ENV isGcpEnv = true/false
+```
+Also need to set server IP in `/reactjs/src/config.js`
+```
+const isLocalServer = true;
+const serverIP = isLocalServer ? 'http://127.0.0.1:3000' : 'https://shorteningurl-eh4konhfta-de.a.run.app';
+
+export { isLocalServer, serverIP };
 ```
 
 ```
@@ -59,6 +108,7 @@ docker run -p 7777:3000 short-url
 
 ## Feature
 - [x] check URL exist
+    * [tldts](https://www.npmjs.com/package/tldts)
     * [url-exist](https://www.npmjs.com/package/url-exist)
 - [x] user registration
 - [ ] add,update,delete mutiple shortURL
@@ -68,7 +118,7 @@ docker run -p 7777:3000 short-url
 - [ ] Users can Self-modified Open Graph Metadata
 
 ## Other Feature
-- [ ] Short-Url Self-modified
+- [x] Short-Url Self-modified
 - [x] Generate QR-Code (generate at frontend)
     * [qrcode](https://www.npmjs.com/package/qrcode)
-- [ ] view Short-Url period and (can extend the period)
+- [x] view Short-Url period and (can extend the period)

@@ -3,8 +3,12 @@ import { Link } from 'react-router-dom';
 import {
   Container, Typography, Button, Box, Paper, TextField,
 } from '@mui/material';
-import { CopyURL, getShortenURL } from '../utils/Utils_main';
+import axios from 'axios';
+import cookie from 'cookie';
+import { CopyURL, QRCodeGen } from '../utils/Utils_main';
 import TypingTitle from '../components/TypingTitle';
+import { serverIP } from '../config';
+import Loading from '../components/Loading';
 
 function resultTable() {
   return (
@@ -67,8 +71,45 @@ function resultTable() {
 }
 
 export default function Main() {
+  const loadingRef = React.useRef();
+
+  const handleLoadingPopup = () => {
+    loadingRef.current.handleToggle();
+  };
+  const handleLoadingPopdown = () => {
+    loadingRef.current.handleClose();
+  };
+  const getShortenURL = () => {
+    const cookies = cookie.parse(document.cookie);
+    const data = { url: document.querySelector('#url').value, owner: cookies.username };
+    document.querySelector('#shortURL').text = 'Process...';
+    handleLoadingPopup();
+    axios
+      .post(`${serverIP}/shorten`, data)
+      .then((response) => {
+        console.log(response.data.clickTime);
+        console.log(response.data.shortUrl);
+        if (response.data.clickTime === undefined) {
+          document.querySelector('#shortURL').text = 'URL is Error,Please Re-check the URL';
+          document.querySelector('#clickTime').innerText = 0;
+          QRCodeGen(serverIP);
+        } else {
+          document.querySelector('#shortURL').text = response.data.shortUrl;
+          document.querySelector('#shortURL').href = response.data.shortUrl;
+          document.querySelector('#clickTime').innerText = response.data.clickTime;
+          QRCodeGen(response.data.shortUrl);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      }).finally(() => {
+        handleLoadingPopdown();
+        document.querySelector('.resultPaper').style.visibility = 'visible';
+      });
+  };
   return (
     <>
+      <Loading ref={loadingRef} />
       <Box height="30%" display="flex" flexDirection="column" textAlign="center">
         <Container disableGutters maxWidth="md" component="main" sx={{ pt: 15, pb: 6 }}>
           <TypingTitle />

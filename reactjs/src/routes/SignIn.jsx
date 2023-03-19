@@ -2,7 +2,6 @@
 /* eslint-disable no-restricted-globals */
 import * as React from 'react';
 import axios from 'axios';
-import qs from 'qs';
 import { Link } from 'react-router-dom';
 
 import Avatar from '@mui/material/Avatar';
@@ -16,8 +15,17 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { serverIP } from '../config';
+import Loading from '../components/Loading';
 
 export default function SignIn() {
+  const loadingRef = React.useRef();
+
+  const handleLoadingPopup = () => {
+    loadingRef.current.handleToggle();
+  };
+  const handleLoadingPopdown = () => {
+    loadingRef.current.handleClose();
+  };
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -25,8 +33,8 @@ export default function SignIn() {
       email: data.get('email'),
       password: data.get('password'),
     };
-    const qsdata = qs.stringify(signData);
-    axios.post(`${serverIP}/signIn`, qsdata, { withCredentials: true }).then((res) => {
+    handleLoadingPopup();
+    axios.post(`${serverIP}/signIn`, signData, { withCredentials: true }).then((res) => {
       console.log(res.data);
       if (res.data.success === true) {
         alert('Login Success');
@@ -34,12 +42,15 @@ export default function SignIn() {
       } else {
         alert('Login Failed,Please Re-Check your email&password');
       }
+    }).finally(() => {
+      handleLoadingPopdown();
     });
   };
 
   return (
 
     <Container component="main" maxWidth="xs">
+      <Loading ref={loadingRef} />
       <Box
         sx={{
           marginTop: 8,

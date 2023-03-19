@@ -1,5 +1,5 @@
 import express from 'express'
-import { getShortUrls } from '../utils/db.js'
+import { getShortUrls, updateShortUrls, refreshShortUrls, deleteShortUrls } from '../utils/db.js'
 const manageRouter = express.Router()
 
 manageRouter.get('/api/shortUrls', async (req, res): Promise<any> => {
@@ -13,40 +13,37 @@ manageRouter.get('/api/shortUrls', async (req, res): Promise<any> => {
   }
 })
 
-manageRouter.post('/updateUrl', async (req, res): Promise<void> => {
+manageRouter.post('/updateUrl', async (req, res): Promise<any> => {
   const username: string = req.body.username
   const updateUrls: any[] = req.body.updateUrls
   console.log(req.body.updateUrls)
   if (req.session.user === username) {
-    res.json(
-      { msg: 'complete', updateUrls }
-    )
+    const result = await updateShortUrls(updateUrls)
+    return result ? res.json({ msg: 'Update Success' }) : res.json({ msg: 'Update Failed' })
   } else {
     res.json({ msg: 'Wrong authorization' })
   }
 })
 
-manageRouter.post('/delectUrl', async (req, res): Promise<void> => {
+manageRouter.post('/delectUrl', async (req, res): Promise<any> => {
   const username: string = req.body.username
-  const updateUrls: any[] = req.body.updateUrls
-  console.log(req.body.updateUrls)
+  const deleteUrls: any[] = req.body.deleteUrls
+  console.log(req.body.deleteUrls)
   if (req.session.user === username) {
-    res.json(
-      { msg: 'complete', updateUrls }
-    )
+    const result = await deleteShortUrls(deleteUrls)
+    return result ? res.json({ msg: 'Delect Success' }) : res.json({ msg: 'Delect Failed' })
   } else {
     res.json({ msg: 'Wrong authorization' })
   }
 })
 
-manageRouter.post('/refreshUrl', async (req, res): Promise<void> => {
+manageRouter.post('/refreshUrl', async (req, res): Promise<any> => {
   const username: string = req.body.username
-  const updateUrls: any[] = req.body.updateUrls
-  console.log(req.body.updateUrls)
+  const refreshUrls: any[] = req.body.refreshUrls
+  console.log(req.body.refreshUrls)
   if (req.session.user === username) {
-    res.json(
-      { msg: 'complete', updateUrls }
-    )
+    const result = await refreshShortUrls(refreshUrls)
+    return result ? res.json({ msg: 'Refresh Success' }) : res.json({ msg: 'Refresh Failed' })
   } else {
     res.json({ msg: 'Wrong authorization' })
   }

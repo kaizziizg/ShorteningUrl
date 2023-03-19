@@ -59,14 +59,14 @@ async function SignIn (_email: string, _password: string): Promise<any> {
   return res
 }
 
-async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, _liftTime: number): Promise<boolean> {
+async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, _lifeTime: number): Promise<boolean> {
   let isAdd: boolean = false
   console.log(`_oriUrl : ${_oriUrl} _shortURL : ${_shortURL}`)
   const newUrl = await Urls.create({
     oriUrl: _oriUrl,
     shortUrl: _shortURL,
     owner: _owner,
-    lifeTime: getUTCLifeTime(_liftTime)
+    lifeTime: getUTCLifeTime(_lifeTime)
   }).then((res) => {
     isAdd = true
   }).catch((err) => {
@@ -106,4 +106,35 @@ async function getShortUrls (_username: string): Promise<any> {
   }
 }
 
-export { SignIn, SignUp, addShortUrl, getOriUrl, isShortUrlExist, getShortUrls }
+async function updateShortUrls (updateUrls: any): Promise<boolean> {
+  Object.keys(updateUrls).forEach(async function (key) {
+    try {
+      await Urls.update({ shortUrl: updateUrls[key] }, { where: { shortUrl: key } })
+    } catch (e) {
+      return false
+    }
+  })
+  return true
+}
+
+async function refreshShortUrls (refreshUrls: string[]): Promise<boolean> {
+  refreshUrls.forEach(async function (refreshUrl: string) {
+    try {
+      await Urls.update({ lifeTime: getUTCLifeTime(30) }, { where: { shortUrl: refreshUrl } })
+    } catch (e) {
+      return false
+    }
+  })
+  return true
+}
+
+async function deleteShortUrls (deleteUrls: string[]): Promise<boolean> {
+  try {
+    await Urls.destroy({ where: { shortUrl: deleteUrls } })
+  } catch (e) {
+    return false
+  }
+  return true
+}
+
+export { SignIn, SignUp, addShortUrl, getOriUrl, isShortUrlExist, getShortUrls, updateShortUrls, refreshShortUrls, deleteShortUrls }

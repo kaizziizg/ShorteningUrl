@@ -1,7 +1,7 @@
 import express from 'express'
 import path from 'path'
 import cookieParser from 'cookie-parser'
-import logger from 'morgan'
+// import logger from 'morgan'
 import cors from 'cors'
 import session from 'express-session'
 
@@ -41,10 +41,10 @@ app.use(session({
   }
 }))
 
+app.use(express.static(path.join('./', 'public')))
 app.use(checkURLRouter)
 app.use(signRouter)
 app.use(manageRouter)
 app.use(shortUrlRouter)
 
-app.use(express.static(path.join('./', 'public')))
 export default app
