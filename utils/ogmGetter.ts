@@ -9,11 +9,12 @@ async function ogmGetter (url: string): Promise<any> {
       const { error, result, response } = res
       ogmTitle = result.ogTitle ?? ''
       ogmDescription = result.ogDescription ?? ''
-      ogImage = result.ogImage.url ?? ''
+      if (result.ogImage !== undefined) {
+        ogImage = result.ogImage.url ?? ''
+      }
     }).catch((err) => {
       console.log(err)
     })
-  
 
   return { ogmTitle, ogmDescription, ogImage }
 }
