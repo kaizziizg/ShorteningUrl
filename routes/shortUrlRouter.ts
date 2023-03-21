@@ -44,6 +44,7 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
   if (!isUrlExist) {
     urlInfo.isSuccess = false
     urlInfo.msg = 'This Url doesnt work'
+    urlInfo.shortUrl = 'This URL doesnt work'
     res.json({ urlInfo })
     return
   }

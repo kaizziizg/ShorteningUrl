@@ -14,6 +14,7 @@ import { serverIP, clog } from '../config';
 import Loading from '../components/Loading';
 import TypingTitle from '../components/main/TypingTitle';
 import { SubTitle } from '../components/main/Titles';
+import QRCode from '../components/QRCode';
 
 function TabPanel(props) {
   const {
@@ -67,7 +68,7 @@ function resultTabs(urlInfo) {
             Shorten URL
           </h1>
           <div style={{ fontSize: '2rem' }}>
-            <a href={urlInfo.shortUrl} target="_blank" rel="noreferrer">{urlInfo.shortUrl}</a>
+            <a href={urlInfo.shortUrl} target="_blank" rel="noreferrer" id="shortURL">{urlInfo.shortUrl}</a>
           </div>
           <br />
           <Button
@@ -83,7 +84,7 @@ function resultTabs(urlInfo) {
             Copy URL
           </Button>
           <SubTitle title="Click Time" contentID="clickTime" data={urlInfo.clickTime} />
-          <canvas id="qrcode" style={{ margin: 'auto' }} />
+          <QRCode url={urlInfo.shortUrl} />
         </TabPanel>
         <TabPanel value={value} index={1}>
 
