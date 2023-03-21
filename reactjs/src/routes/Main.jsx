@@ -85,6 +85,7 @@ function resultTabs(urlInfo) {
           </Button>
           <SubTitle title="Click Time" contentID="clickTime" data={urlInfo.clickTime} />
           <QRCode url={urlInfo.shortUrl} />
+          <SubTitle title="ShortenURL Owner" contentID="clickTime" data={urlInfo.owner} />
         </TabPanel>
         <TabPanel value={value} index={1}>
 
