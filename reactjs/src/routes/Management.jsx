@@ -1,6 +1,5 @@
 /* eslint-disable max-len */
 /* eslint-disable no-restricted-globals */
-/* eslint-disable no-alert */
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
@@ -16,7 +15,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { serverIP } from '../config';
+import { serverIP, clog } from '../config';
 import EnhancedTableHead from '../components/EnhancedTableHead';
 import DialogYesNo from '../components/DialogYesNo';
 import Loading from '../components/Loading';
@@ -107,7 +106,7 @@ export default function Management() {
 
   const handleDelete = (event) => {
     if (selected.length === 0) {
-      console.log('no selection');
+      clog('no selection');
     }
     const deleteData = {
       username: cookies.username,
@@ -115,7 +114,7 @@ export default function Management() {
     };
     handleLoadingPopup();
     axios.post(`${serverIP}/delectUrl`, deleteData).then((res) => {
-      console.log(res.data);
+      clog(res.data);
     }).catch((err) => {
       document.location.href = `${serverIP}/logout`;
     }).finally(() => {
@@ -135,7 +134,7 @@ export default function Management() {
     };
     handleLoadingPopup();
     axios.post(`${serverIP}/updateUrl`, updateData).then((res) => {
-      console.log(res.data);
+      clog(res.data);
     }).catch((err) => {
       document.location.href = `${serverIP}/logout`;
     }).finally(() => {
@@ -152,7 +151,7 @@ export default function Management() {
 
   const handleRefresh = (evemt) => {
     if (selected.length === 0) {
-      console.log('no selection');
+      clog('no selection');
     }
     const refreshData = {
       username: cookies.username,
@@ -160,7 +159,7 @@ export default function Management() {
     };
     handleLoadingPopup();
     axios.post(`${serverIP}/refreshUrl`, refreshData).then((res) => {
-      console.log(res.data);
+      clog(res.data);
     }).catch((err) => {
       document.location.href = `${serverIP}/logout`;
     }).finally(() => {
@@ -186,13 +185,13 @@ export default function Management() {
     // handleLoadingPopup();
     axios.get(`${serverIP}/api/shortUrls`, { params: { username: cookies.username } }).then((res) => {
       setData(res.data);
-      console.log(res.data);
+      clog(res.data);
       const Dict = {};
       for (let i = 0; i < res.data.length; i += 1) {
         Dict[res.data[i].shortUrl] = false;
       }
       setError(Dict);
-      console.log(res.data);
+      clog(res.data);
     }).catch((err) => {
       document.location.href = `${serverIP}/logout`;
     });
@@ -210,7 +209,6 @@ export default function Management() {
         <DialogYesNo btnName="Delete" title="Delete WARNING!!!" msgs={selected.length === 0 ? () => ['you must select aleast one'] : () => [`${selected}`]} handle={handleDelete} />
         <DialogYesNo btnName="Update" title="Update WARNING!!!" msgs={selected.length === 0 ? () => ['you must select aleast one'] : getModifiedUrl} handle={handleUpdate} />
         <DialogYesNo btnName="Refresh" title="Period will extended by 30days" msgs={selected.length === 0 ? () => ['you must select aleast one'] : () => [`${selected}`]} handle={handleRefresh} />
-
       </Box>
       <Paper sx={{ width: '100%', mb: 2 }}>
         <TableContainer

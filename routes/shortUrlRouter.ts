@@ -1,107 +1,63 @@
 import express from 'express'
-import getHash from '../utils/hashGenetator.js'
-import { CheckURLExist, checkProtocol } from '../utils/checkURLExist.js'
+import UrlInfo from '../utils/class/UrlInfo.js'
+import { CheckURLExist } from '../utils/checkURLExist.js'
 import { addShortUrl, getOriUrl, isShortUrlExist } from '../utils/db.js'
-import ogs from 'open-graph-scraper'
+import ogmGetter from '../utils/ogmGetter.js'
+
 const shortUrlRouter = express.Router()
 
 shortUrlRouter.get('/api/shorten', async (req, res): Promise<void> => {
-  let originalUrl: string = req.query.url as string
-
-  let success: boolean = true
-  let msg: string = ' '
-  let ogmTitle: string = ''
-  let ogmDescription: string = ''
-  let ogImage: string = ''
-  originalUrl = checkProtocol(originalUrl)
-  const isUrlExist = await CheckURLExist(originalUrl)
-
-  if (!isUrlExist) {
-    success = false
-    msg = 'This Url doesnt work'
-    res.json({ success, msg })
-  } else {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    const ShortUrlExist: string = await isShortUrlExist(originalUrl)
-    await ogs({ url: originalUrl })
-      .then((res: any) => {
-        const { error, result, response } = res
-        ogmTitle = result.ogmTitle
-        ogmDescription = result.ogmDescription
-        ogImage = result.ogImage.url
-        // console.log(`ogmTitle : ${result.ogmTitle}`)
-        // console.log(`ogmDescription : ${result.ogmDescription}`)
-        // console.log(`ogImageURL : ${result.ogImage.url}`)
-      }).catch((err) => {
-        console.log(err)
-      })
-    if (ShortUrlExist === 'not found') {
-      const hashURL: string = getHash(originalUrl)
-      const shortUrl: string = 'https://' + req.hostname + '/' + hashURL
-      addShortUrl(originalUrl, hashURL, 'noOwner', 30, ogmTitle, ogmDescription, ogImage)
-      res.json({ success, originalUrl, shortUrl })
-    } else {
-      const msg: string = 'The ShortUrl is already created'
-      const shortUrl: string = 'https://' + req.hostname + '/' + ShortUrlExist
-      res.json({ success, msg, originalUrl, shortUrl })
-    }
-  }
-})
-
-shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
-  let originalUrl: string = req.body.url
   let owner: string = 'noOwner'
   if (req.session.user !== undefined && req.session.user === req.body.owner) {
     owner = req.body.owner
   }
-  console.log(req.session.user)
-  console.log(owner)
-  let success: boolean = true
-  let msg: string = ' '
-  let shortUrl: string = ''
-  let clickTime: number = 0
-  let ogmTitle: string = ''
-  let ogmDescription: string = ''
-  let ogmImage: string = ''
-  originalUrl = checkProtocol(originalUrl)
-  const isUrlExist = await CheckURLExist(originalUrl)
+  let urlInfo: UrlInfo = new UrlInfo(owner, req.query.url as string)
+  urlInfo.getHash()
+  const isUrlExist = await CheckURLExist(urlInfo.oriUrl)
   if (!isUrlExist) {
-    success = false
-    msg = 'This Url doesnt work'
-    res.json({ success, msg })
-  } else {
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    const ShortUrlExist: any = await isShortUrlExist(originalUrl)
-
-    await ogs({ url: originalUrl })
-      .then((res: any) => {
-        const { error, result, response } = res
-        ogmTitle = result.ogTitle === undefined ? ' ' : result.ogTitle
-        ogmDescription = result.ogDescription === undefined ? ' ' : result.ogDescription
-        ogmImage = result.ogImage === undefined ? ' ' : result.ogImage.url
-
-        // console.log(`ogmTitle : ${ogmTitle}`)
-        // console.log(`ogmDescription : ${ogmDescription}`)
-        // console.log(`ogImageURL : ${ogmImage}`)
-      }).catch((err) => {
-        console.log(err)
-      })
-    if (ShortUrlExist.shortUrl === undefined) {
-      const hashURL: string = getHash(originalUrl)
-      shortUrl = 'https://' + req.hostname + '/' + hashURL
-      clickTime = 0
-      addShortUrl(originalUrl, hashURL, owner, 30, ogmTitle, ogmDescription, ogmImage)
-      res.json({ success, originalUrl, shortUrl, clickTime, ogmTitle, ogmDescription, ogmImage })
-    } else {
-      const msg: string = 'The ShortUrl is already created'
-      shortUrl = 'https://' + req.hostname + '/' + String(ShortUrlExist.shortUrl)
-      clickTime = ShortUrlExist.clickTime
-      ogmTitle = ShortUrlExist.ogmTitle
-      ogmDescription = ShortUrlExist.ogmDescription
-      ogmImage = ShortUrlExist.ogmImage
-      res.json({ success, msg, ShortUrlExist })
-    }
+    urlInfo.isSuccess = false
+    urlInfo.msg = 'This Url doesnt work'
+    res.json({ urlInfo })
+    return
   }
+  urlInfo = await isShortUrlExist(urlInfo)
+  if (urlInfo.msg === 'not found') {
+    ({ ogmTitle: urlInfo.ogmTitle, ogmDescription: urlInfo.ogmDescription, ogImage: urlInfo.ogmImage } = await ogmGetter(urlInfo.oriUrl))
+    urlInfo = await addShortUrl(urlInfo)
+    urlInfo.shortUrl = 'https://' + req.hostname + '/' + urlInfo.shortUrl
+  } else {
+    urlInfo.msg = 'The ShortUrl is already created'
+    urlInfo.isSuccess = true
+    urlInfo.shortUrl = 'https://' + req.hostname + '/' + String(urlInfo.shortUrl)
+  }
+  res.json({ urlInfo })
+})
+
+shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
+  let owner: string = 'noOwner'
+  if (req.session.user !== undefined && req.session.user === req.body.owner) {
+    owner = req.body.owner
+  }
+  let urlInfo: UrlInfo = new UrlInfo(owner, req.body.url)
+  urlInfo.getHash()
+  const isUrlExist = await CheckURLExist(urlInfo.oriUrl)
+  if (!isUrlExist) {
+    urlInfo.isSuccess = false
+    urlInfo.msg = 'This Url doesnt work'
+    res.json({ urlInfo })
+    return
+  }
+  urlInfo = await isShortUrlExist(urlInfo)
+  if (urlInfo.msg === 'not found') {
+    ({ ogmTitle: urlInfo.ogmTitle, ogmDescription: urlInfo.ogmDescription, ogImage: urlInfo.ogmImage } = await ogmGetter(urlInfo.oriUrl))
+    urlInfo = await addShortUrl(urlInfo)
+    urlInfo.shortUrl = 'https://' + req.hostname + '/' + urlInfo.shortUrl
+  } else {
+    urlInfo.msg = 'The ShortUrl is already created'
+    urlInfo.isSuccess = true
+    urlInfo.shortUrl = 'https://' + req.hostname + '/' + String(urlInfo.shortUrl)
+  }
+  res.json({ urlInfo })
 })
 
 shortUrlRouter.get('/:shortUrl', async (req, res, next) => {

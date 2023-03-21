@@ -12,7 +12,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { serverIP } from '../config';
+import { serverIP, clog } from '../config';
 import Loading from '../components/Loading';
 
 export default function SignUp() {
@@ -34,7 +34,7 @@ export default function SignUp() {
     };
     handleLoadingPopup();
     axios.post(`${serverIP}/signUp`, signData).then((res) => {
-      console.log(res.data);
+      clog(res.data);
       if (res.data.success === true) {
         alert('SignUp Success');
         location.href = '/#/Signin';

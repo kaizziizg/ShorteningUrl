@@ -8,7 +8,6 @@ const CopyURL = () => {
 const QRCodeGen = (url) => {
   QRCode.toCanvas(document.getElementById('qrcode'), url, (error) => {
     if (error) console.error(error);
-    console.log('success!');
   });
 };
 

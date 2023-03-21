@@ -58,17 +58,17 @@ a simple ShorteningUrl Service with Node.js,React.js
         If the short URL is valid, the API will redirect to the original URL. If the short URL is not valid, the API will return a 404 error.
 
 ## Docker
-before build image,you must set environment variable
+before build image,must set environment variable
 ```
 # DB connect info
-ENV ShortUrlServer={}
-ENV ShortUrlUsername={}
-ENV ShortUrlPassword={}
+ShortUrlServer={}
+ShortUrlUsername={}
+ShortUrlPassword={}
 <!-- you can find INSTANCE_CONNECTION_NAME from your cloud sql table -->
-ENV INSTANCE_CONNECTION_NAME = {}
+INSTANCE_CONNECTION_NAME = {}
 <!-- isGcpEnv == true,connect MySQL with Unix domain socket -->
 <!-- isGcpEnv == false,connect MySQL with TCP -->
-ENV isGcpEnv = true/false
+isGcpEnv = true/false
 ```
 Also need to set server IP in `/reactjs/src/config.js`
 ```

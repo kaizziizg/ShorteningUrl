@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <ThemeProvider theme={darkTheme}>
-      {/* normalize.css */}
+      {/* CssBaseline -> normalize.css */}
       <CssBaseline />
       <Routes />
     </ThemeProvider>

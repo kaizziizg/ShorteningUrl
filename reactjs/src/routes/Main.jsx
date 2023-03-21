@@ -1,128 +1,111 @@
 import * as React from 'react';
-import { Link } from 'react-router-dom';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import PropTypes from 'prop-types';
 import {
-  Container, Typography, Button, Box, Paper, TextField,
+  Container, Typography, Button, Box, TextField,
+  Tab, Tabs, Paper,
 } from '@mui/material';
+
 import axios from 'axios';
 import cookie from 'cookie';
-import { CopyURL, QRCodeGen } from '../utils/Utils_main';
-import TypingTitle from '../components/TypingTitle';
-import { serverIP } from '../config';
+import UrlInfo from '../components/main/UrlInfo';
+import { CopyURL } from '../utils/Utils_main';
+import { serverIP, clog } from '../config';
 import Loading from '../components/Loading';
+import TypingTitle from '../components/main/TypingTitle';
+import { SubTitle } from '../components/main/Titles';
 
-function resultTable() {
+function TabPanel(props) {
+  const {
+    children, value, index,
+  } = props;
+
   return (
-    <Box height="50%" width="80wh" display="flex" flexDirection="column" justifyContent="start" textAlign="center">
-      <Container disableGutters maxWidth="md" component="main" sx={{ pt: 0, pb: 6 }}>
-        <Paper
-          square
-          sx={{
-            p: 2, display: 'flex', flexDirection: 'column', height: '100%', width: '100%',
-          }}
-          className="resultPaper"
-          style={{ visibility: 'hidden' }}
-        >
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }} display="flex" flexDirection="column" justifyContent="start" textAlign="center">
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+TabPanel.propTypes = {
+  // eslint-disable-next-line react/require-default-props
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+function resultTabs(urlInfo) {
+  const [value, setValue] = React.useState(0);
 
-          <Typography
-            variant="h2"
-            align="center"
-            color="text.primary"
-            gutterBottom
-          >
-            Result
-          </Typography>
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.primary"
-            gutterBottom
-          >
-            <Link
-              id="shortURL"
-              href="https://shorteningurl-eh4konhfta-de.a.run.app"
-            // onClick={preventDefault}
-              target="_blank"
-            >
-              https://shorteningurl-eh4konhfta-de.a.run.app
-            </Link>
-          </Typography>
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  return (
+    <Box sx={{ width: '80%', mx: 'auto' }}>
+      <Paper
+        square
+        sx={{
+          p: 2, display: 'flex', flexDirection: 'column', height: '100%', width: '100%',
+        }}
+        className="resultPaper"
+        style={{ visibility: 'hidden', borderRadius: '1rem' }}
+      >
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs value={value} onChange={handleChange} centered>
+            <Tab label="URL Info" />
+            <Tab label="Open Graph MetaData" />
+          </Tabs>
+        </Box>
+        <TabPanel value={value} index={0}>
+          <h1>
+            Shorten URL
+          </h1>
+          <div style={{ fontSize: '2rem' }}>
+            <a href={urlInfo.shortUrl} target="_blank" rel="noreferrer">{urlInfo.shortUrl}</a>
+          </div>
+          <br />
           <Button
             variant="contained"
             color="primary"
             sx={{
               marginTop: '1.5rem',
+              width: '30%',
+              margin: 'auto',
             }}
             onClick={CopyURL}
           >
             Copy URL
           </Button>
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.primary"
-          >
-            <p>clickTime</p>
-          </Typography>
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.primary"
-            sx={{ mb: '1rem' }}
-          >
-            <div id="clickTime">
-              0
-            </div>
-          </Typography>
+          <SubTitle title="Click Time" contentID="clickTime" data={urlInfo.clickTime} />
           <canvas id="qrcode" style={{ margin: 'auto' }} />
-          <Typography
-            variant="h4"
-            align="center"
-            color="text.primary"
-            sx={{ mt: '1rem' }}
-          >
-            Open Graph MetaData
-          </Typography>
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+
+          <SubTitle title="Title" contentID="ogmTitle" data={urlInfo.ogmTitle} />
+          <SubTitle title="Description" contentID="ogmDescription" data={urlInfo.ogmDescription} />
           <Typography
             variant="h5"
-            align="center"
-            color="text.primary"
-            sx={{ m: '1rem' }}
-          >
-            Title
-          </Typography>
-          <div id="ogmTitle">
-            Oops...
-          </div>
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.primary"
-            sx={{ m: '1rem' }}
-          >
-            Description
-          </Typography>
-          <div id="ogmDescription">
-            Oops...
-          </div>
-          <Typography
-            variant="h5"
-            align="center"
-            color="text.primary"
-            gutterBottom
+            component="span"
             sx={{ m: '1rem' }}
           >
             Image
           </Typography>
 
-          <img id="ogmImage" src="" alt="Open Graph MetaData" style={{ margin: 'auto', width: '50%' }} />
-
-        </Paper>
-      </Container>
+          <img id="ogmImage" src={urlInfo.ogmImage} alt="Open Graph MetaData" style={{ margin: 'auto', width: '50%' }} />
+        </TabPanel>
+      </Paper>
     </Box>
   );
 }
 
 export default function Main() {
+  const [urlInfo, setUrlInfo] = React.useState(new UrlInfo());
   const loadingRef = React.useRef();
 
   const handleLoadingPopup = () => {
@@ -134,29 +117,16 @@ export default function Main() {
   const getShortenURL = () => {
     const cookies = cookie.parse(document.cookie);
     const data = { url: document.querySelector('#url').value, owner: cookies.username };
-    document.querySelector('#shortURL').text = 'Process...';
+    urlInfo.shortUrl = 'Process...';
     handleLoadingPopup();
     axios
       .post(`${serverIP}/shorten`, data)
       .then((response) => {
-        // console.log(response.data.clickTime);
-        // console.log(response.data.shortUrl);
-        if (response.data.clickTime === undefined) {
-          document.querySelector('#shortURL').text = 'URL is Error,Please Re-check the URL';
-          document.querySelector('#clickTime').innerText = 0;
-          QRCodeGen(serverIP);
-        } else {
-          document.querySelector('#shortURL').text = response.data.shortUrl;
-          document.querySelector('#shortURL').href = response.data.shortUrl;
-          document.querySelector('#clickTime').innerText = response.data.clickTime;
-          document.querySelector('#ogmTitle').innerText = response.data.ogmTitle;
-          document.querySelector('#ogmDescription').innerText = response.data.ogmDescription;
-          document.querySelector('#ogmImage').src = response.data.ogmImage;
-          QRCodeGen(response.data.shortUrl);
-        }
+        clog(response.data);
+        setUrlInfo(response.data.urlInfo);
       })
       .catch((error) => {
-        console.log(error);
+        clog(error);
       }).finally(() => {
         handleLoadingPopdown();
         document.querySelector('.resultPaper').style.visibility = 'visible';
@@ -177,7 +147,7 @@ export default function Main() {
           </Button>
         </Container>
       </Box>
-      {resultTable()}
+      {resultTabs(urlInfo)}
     </>
   );
 }

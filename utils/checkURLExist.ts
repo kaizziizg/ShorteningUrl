@@ -2,6 +2,9 @@ import urlExist from 'url-exist'
 import { parse } from 'tldts'
 
 async function CheckURLExist (url: string): Promise<boolean> {
+  if (url === 'http://' || url === 'https://') {
+    return false
+  }
   if (parse(url).domain === null) {
     return false
   }

@@ -1,8 +1,9 @@
-import { getUTCCurrentTime, getUTCLifeTime, Trans2LocaleTime } from './Time.js'
+import { getUTCCurrentTime, getUTCLifeTime } from './Time.js'
 import bcrypt from 'bcrypt'
-import { sequelize, saltRounds } from './db/db_init.js'
+import { saltRounds } from './db/db_init.js'
 import Users from './db/db_user.js'
 import Urls from './db/db_urls.js'
+import type UrlInfo from './class/UrlInfo.js'
 
 async function SignUp (_username: string, _email: string, _password: string): Promise<any> {
   const res: any = {}
@@ -59,23 +60,24 @@ async function SignIn (_email: string, _password: string): Promise<any> {
   return res
 }
 
-async function addShortUrl (_oriUrl: string, _shortURL: string, _owner: string, _lifeTime: number, _ogmTitle: string, _ogmDescription: string, _ogmImage: string): Promise<boolean> {
-  let isAdd: boolean = false
-  const newUrl = await Urls.create({
-    oriUrl: _oriUrl,
-    shortUrl: _shortURL,
-    owner: _owner,
-    lifeTime: getUTCLifeTime(_lifeTime),
-    ogmTitle: _ogmTitle,
-    ogmDescription: _ogmDescription,
-    ogmImage: _ogmImage
+async function addShortUrl (_urlInfo: UrlInfo): Promise<UrlInfo> {
+  _urlInfo.lifeTime = getUTCLifeTime(30)
+  await Urls.create({
+    oriUrl: _urlInfo.oriUrl,
+    shortUrl: _urlInfo.shortUrl,
+    owner: _urlInfo.owner,
+    lifeTime: _urlInfo.lifeTime,
+    ogmTitle: _urlInfo.ogmTitle,
+    ogmDescription: _urlInfo.ogmDescription,
+    ogmImage: _urlInfo.ogmImage
   }).then((res) => {
-    isAdd = true
+    _urlInfo.isSuccess = true
+    _urlInfo.msg = 'add URL successed'
   }).catch((err) => {
-    isAdd = false
-    console.log(err)
+    _urlInfo.isSuccess = false
+    _urlInfo.msg = String(err)
   })
-  return isAdd
+  return _urlInfo
 }
 
 async function getOriUrl (_shortURL: string): Promise<string> {
@@ -90,12 +92,15 @@ async function getOriUrl (_shortURL: string): Promise<string> {
   }
 }
 
-async function isShortUrlExist (_oriUrl: string): Promise<any> {
-  const urls = await Urls.findOne({ where: { oriUrl: _oriUrl } })
-  if (urls === null) {
-    return 'not found'
+async function isShortUrlExist (_urlInfo: UrlInfo): Promise<UrlInfo> {
+  const sqlRes = await Urls.findOne({ where: { oriUrl: _urlInfo.oriUrl } })
+  if (sqlRes === null) {
+    _urlInfo.msg = 'not found'
+    return _urlInfo
   } else {
-    return urls.dataValues
+    // add urls.dataValues to res
+    _urlInfo = { ..._urlInfo, ...sqlRes.dataValues }
+    return _urlInfo
   }
 }
 
