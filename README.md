@@ -15,14 +15,33 @@ a simple ShorteningUrl Service with Node.js,React.js
         Content-Type: application/json
         success:
             {
-                "success": true,
-                "originalUrl": "original_url",
-                "shortUrl": "shortened_url"
+                "urlInfo": {
+                    "owner": "noOwner",
+                    "oriUrl": "https://github.com/kaizziizg/ShorteningUrl",
+                    "shortUrl": "https://shorteningurl-eh4konhfta-de.a.run.app/Y6NyY2",
+                    "isSuccess": true,
+                    "msg": "add URL successed",
+                    "clickTime": 0,
+                    "lifeTime": "Thu, 20 Apr 2023 03:13:13 GMT",
+                    "ogmTitle": "GitHub - kaizziizg/Shortenin....",
+                    "ogmDescription": "a simple ShorteningUrl Service with ....",
+                    "ogmImage": "https://opengraph.githubassets.com/..."
+                }
             }
         failure:
             {
-                "success": false,
-                "msg": "The ShortUrl is already created"
+                "urlInfo": {
+                    "owner": "noOwner",
+                    "oriUrl": "WhatYouSendURL",
+                    "shortUrl": "nwU484",
+                    "isSuccess": false,
+                    "msg": "This Url doesnt work",
+                    "clickTime": 0,
+                    "lifeTime": "",
+                    "ogmTitle": "",
+                    "ogmDescription": "",
+                    "ogmImage": ""
+                }
             }
 > POST  `/shorten`
 
@@ -38,24 +57,44 @@ a simple ShorteningUrl Service with Node.js,React.js
         Content-Type: application/json
         success:
             {
-                "success": true,
-                "originalUrl": "original_url",
-                "shortUrl": "shortened_url",
-                "clickTime": 0
+                "urlInfo": {
+                    "owner": "noOwner",
+                    "oriUrl": "https://github.com/kaizziizg/ShorteningUrl",
+                    "shortUrl": "https://shorteningurl-eh4konhfta-de.a.run.app/Y6NyY2",
+                    "isSuccess": true,
+                    "msg": "add URL successed",
+                    "clickTime": 0,
+                    "lifeTime": "Thu, 20 Apr 2023 03:13:13 GMT",
+                    "ogmTitle": "GitHub - kaizziizg/Shortenin....",
+                    "ogmDescription": "a simple ShorteningUrl Service with ....",
+                    "ogmImage": "https://opengraph.githubassets.com/..."
+                }
             }
         failure:
             {
-                "success": false,
-                "msg": "The ShortUrl is already created"
+                "urlInfo": {
+                    "owner": "noOwner",
+                    "oriUrl": "WhatYouSendURL",
+                    "shortUrl": "nwU484",
+                    "isSuccess": false,
+                    "msg": "This Url doesnt work",
+                    "clickTime": 0,
+                    "lifeTime": "",
+                    "ogmTitle": "",
+                    "ogmDescription": "",
+                    "ogmImage": ""
+                }
             }
 
-> POST  `/shorten`
+> Get  `/:shorten`
 
     | Parameter | Type   | Description             |
     | --------- | ------ | ----------------------- |
     | shortUrl  | string | The shortened URL       |
     Response:
-        If the short URL is valid, the API will redirect to the original URL. If the short URL is not valid, the API will return a 404 error.
+        content-type: text/html
+
+        If the short URL is valid, the API will response redirect a html file contains Open Grpah Meta and this html contain javascript to redirect the original URL. If the short URL is not valid, the API will return a 404 error.
 
 ## Docker
 before build image,must set environment variable
