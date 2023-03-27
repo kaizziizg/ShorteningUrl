@@ -16,7 +16,8 @@ const app = express()
 const corsOptions = {
   credentials: true,
   origin: [
-    'http://127.0.0.1:8000'
+    'http://127.0.0.1:8000',
+    'http://127.0.0.1:3000'
   ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   allowedHeaders: ['Content-Type', 'Authorization']

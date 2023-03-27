@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import LinkIcon from '@mui/icons-material/Link';
 import {
   AppBar, Toolbar, Typography, IconButton, Box, MenuItem, Button,
 } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
-import cookie from 'cookie';
+// import cookie from 'cookie';
+import { serverIP, clog } from '../config';
 
 function Title(mg) {
   return (
@@ -31,8 +33,9 @@ function Title(mg) {
 }
 
 function Header() {
-  const cookies = cookie.parse(document.cookie);
+  // const cookies = cookie.parse(document.cookie);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const [username, setUserName] = React.useState('');
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -42,7 +45,7 @@ function Header() {
   };
   let pages = ['Main', 'Support', 'SignUp', 'SignIn'];
   let user;
-  if (cookies.isLogin === 'true') {
+  if (username !== 'Wrong authorization' && username !== '') {
     pages = ['Main', 'Support', 'Management', 'Logout'];
     user = (
       <Typography
@@ -53,10 +56,19 @@ function Header() {
           },
         }}
       >
-        {`Hi, ${cookies.username}`}
+        {`Hi, ${username}`}
       </Typography>
     );
   }
+  React.useEffect(() => {
+    axios.get(`${serverIP}/api/getUser`).then((res) => {
+      setUserName(res.data.username);
+      clog(res.data.username);
+    }).catch((err) => {
+      clog(err);
+      document.location.href = `${serverIP}/logout`;
+    });
+  }, []);
   return (
     <AppBar position="static" elevation={0} sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}>
       <Toolbar>

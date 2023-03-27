@@ -3,6 +3,14 @@ import { SignIn, SignUp } from '../utils/db.js'
 
 const signRouter = express.Router()
 
+signRouter.get('/api/getUser', async (req, res): Promise<void> => {
+  if (req.session.user === req.cookies.username && req.cookies.username !== undefined) {
+    res.json({ username: req.cookies.username })
+  } else {
+    res.json({ username: 'Wrong authorization' })
+  }
+})
+
 signRouter.post('/signUp', async (req, res): Promise<void> => {
   const username: string = req.body.username
   const email: string = req.body.email

@@ -2,7 +2,7 @@
 /* eslint-disable no-restricted-globals */
 import * as React from 'react';
 import axios from 'axios';
-import { Link, useOutletContext, useNavigate } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -17,7 +17,7 @@ import { serverIP, clog } from '../config';
 
 export default function SignIn() {
   const [controller] = useOutletContext();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const handleLoadingPopup = () => {
     controller.setOpenLoading(true);
   };
@@ -44,8 +44,9 @@ export default function SignIn() {
         controller.setAlertMsg('Login Success');
         controller.setAlertState('success');
         controller.setOpenAlert(true);
-        // location.href = '/';
-        navigate('/');
+        // because of Header re-render
+        location.href = '/';
+        // navigate('/');
       } else {
         controller.setAlertMsg('Login Failed,Please Re-Check your email&password');
         controller.setAlertState('error');
