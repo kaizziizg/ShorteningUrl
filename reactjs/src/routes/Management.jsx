@@ -123,7 +123,8 @@ export default function Management() {
       // navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
-      navigate('/Management');
+      // navigate(0) -> reload component
+      navigate(0);
     });
   };
   const handleUpdate = (event) => {
@@ -174,8 +175,8 @@ export default function Management() {
       // navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
-      // location.reload();
-      navigate('/Management');
+      // navigate(0) -> reload component
+      navigate(0);
     });
   };
   const isSelected = (name) => selected.indexOf(name) !== -1;
