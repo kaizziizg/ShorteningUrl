@@ -34,16 +34,13 @@ shortUrlRouter.get('/api/shorten', async (req, res): Promise<void> => {
 })
 
 shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
-  let owner: string = 'noOwner'
-  let isLogin: boolean = false
-  if (req.session.user !== undefined && req.session.user === req.body.owner) {
-    owner = req.body.owner
+  let username: string = 'noOwner'
+  const isLogin: boolean = res.locals.login as boolean
+  if (req.session.user !== undefined && req.session.user === req.body.username) {
+    username = req.body.username
   }
-  if (req.session.user === owner && owner !== undefined) {
-    isLogin = true
-  }
-  let urlInfo: UrlInfo = new UrlInfo(owner, req.body.url)
-  urlInfo.getHash()
+
+  let urlInfo: UrlInfo = new UrlInfo(username, req.body.url)
   const isUrlExist = await CheckURLExist(urlInfo.oriUrl)
   if (!isUrlExist) {
     urlInfo.isSuccess = false
@@ -52,17 +49,25 @@ shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
     res.json({ urlInfo })
     return
   }
+
   urlInfo = await isShortUrlExist(urlInfo)
+  // console.log(`login ${res.locals.login}`)
+  console.log('==================')
+  console.log(urlInfo.msg === 'not found' || isLogin)
   if (urlInfo.msg === 'not found' || isLogin) {
+    let urlInfo: UrlInfo = new UrlInfo(username, req.body.url)
+    urlInfo.getHash();
     ({ ogmTitle: urlInfo.ogmTitle, ogmDescription: urlInfo.ogmDescription, ogImage: urlInfo.ogmImage } = await ogmGetter(urlInfo.oriUrl))
+    console.log(urlInfo.shortUrl)
     urlInfo = await addShortUrl(urlInfo)
     urlInfo.shortUrl = 'https://' + req.hostname + '/' + urlInfo.shortUrl
+    res.json({ urlInfo })
   } else {
     urlInfo.msg = 'The ShortUrl is already created'
     urlInfo.isSuccess = true
     urlInfo.shortUrl = 'https://' + req.hostname + '/' + String(urlInfo.shortUrl)
+    res.json({ urlInfo })
   }
-  res.json({ urlInfo })
 })
 
 shortUrlRouter.get('/:shortUrl', async (req, res, next) => {

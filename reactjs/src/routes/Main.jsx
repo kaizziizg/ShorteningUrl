@@ -125,16 +125,20 @@ export default function Main() {
       return;
     }
     const cookies = cookie.parse(document.cookie);
-    const data = { url: document.querySelector('#url').value, owner: cookies.username };
+    const data = { url: document.querySelector('#url').value, username: cookies.username };
     urlInfo.shortUrl = 'Process...';
     handleLoadingPopup();
     axios
       .post(`${serverIP}/shorten`, data)
       .then((response) => {
-        clog(response.data);
+        clog(response.data.urlInfo.msg);
         setUrlInfo(response.data.urlInfo);
-        controller.setAlertMsg('successfully generated');
-        controller.setAlertState('success');
+        if (response.data.urlInfo.isSuccess) {
+          controller.setAlertState('success');
+        } else {
+          controller.setAlertState('error');
+        }
+        controller.setAlertMsg(response.data.urlInfo.msg);
         controller.setOpenAlert(true);
         document.querySelector('.resultPaper').style.visibility = 'visible';
       })
