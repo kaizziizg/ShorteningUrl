@@ -50,6 +50,10 @@ export default function SignUp() {
         controller.setAlertState('error');
         controller.setOpenAlert(true);
       }
+    }).catch((err) => {
+      controller.setAlertMsg(err.toString());
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
     }).finally(() => {
       handleLoadingPopdown();
     });

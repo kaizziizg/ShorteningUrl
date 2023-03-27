@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LinkIcon from '@mui/icons-material/Link';
@@ -32,8 +33,9 @@ function Title(mg) {
   );
 }
 
-function Header() {
+function Header(props) {
   // const cookies = cookie.parse(document.cookie);
+  const { controller } = props;
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [username, setUserName] = React.useState('');
   const handleOpenNavMenu = (event) => {
@@ -65,8 +67,9 @@ function Header() {
       setUserName(res.data.username);
       clog(res.data.username);
     }).catch((err) => {
-      clog(err);
-      document.location.href = `${serverIP}/logout`;
+      controller.setAlertMsg(err.toString());
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
     });
   }, []);
   return (
@@ -139,5 +142,19 @@ function Header() {
     </AppBar>
   );
 }
+
+Header.propTypes = {
+  controller: PropTypes.shape({
+    openAlert: PropTypes.bool,
+    setOpenAlert: PropTypes.func,
+    alertMsg: PropTypes.string,
+    setAlertMsg: PropTypes.func,
+    alertState: PropTypes.string,
+    setAlertState: PropTypes.func,
+    openLoading: PropTypes.bool,
+    setOpenLoading: PropTypes.func,
+
+  }).isRequired,
+};
 
 export default Header;

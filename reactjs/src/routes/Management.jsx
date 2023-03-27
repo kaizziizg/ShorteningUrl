@@ -117,11 +117,10 @@ export default function Management() {
     axios.post(`${serverIP}/delectUrl`, deleteData).then((res) => {
       clog(res.data);
     }).catch((err) => {
-      controller.setAlertMsg('Authorization Error');
+      controller.setAlertMsg(err.toString());
       controller.setAlertState('error');
       controller.setOpenAlert(true);
-      // setTimeout(() => { document.location.href = `${serverIP}/logout`; }, 3000);
-      navigate('/Logout');
+      // navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
       navigate('/Management');
@@ -141,11 +140,10 @@ export default function Management() {
     axios.post(`${serverIP}/updateUrl`, updateData).then((res) => {
       clog(res.data);
     }).catch((err) => {
-      controller.setAlertMsg('Authorization Error');
+      controller.setAlertMsg(err.toString());
       controller.setAlertState('error');
       controller.setOpenAlert(true);
-      // setTimeout(() => { document.location.href = `${serverIP}/logout`; }, 3000);
-      navigate('/Logout');
+      // navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
     });
@@ -170,11 +168,10 @@ export default function Management() {
     axios.post(`${serverIP}/refreshUrl`, refreshData).then((res) => {
       clog(res.data);
     }).catch((err) => {
-      controller.setAlertMsg('Authorization Error');
+      controller.setAlertMsg(err.toString());
       controller.setAlertState('error');
       controller.setOpenAlert(true);
-      // setTimeout(() => { document.location.href = `${serverIP}/logout`; }, 3000);
-      navigate('/Logout');
+      // navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
       // location.reload();
@@ -206,6 +203,7 @@ export default function Management() {
       }
       setError(Dict);
       clog(res.data);
+      handleLoadingPopdown();
     }).catch((err) => {
       document.location.href = `${serverIP}/logout`;
     });

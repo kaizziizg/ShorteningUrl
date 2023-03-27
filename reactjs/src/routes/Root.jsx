@@ -30,7 +30,7 @@ export default function Root() {
   return (
     <>
       <GlobalStyles styles={{ ul: { margin: 0, padding: 0, listStyle: 'none' } }} />
-      <Header />
+      <Header controller={controller} />
       <AlertSnackbar controller={controller} />
       <Loading controller={controller} />
       <Outlet context={[controller]} />

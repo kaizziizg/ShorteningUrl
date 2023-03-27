@@ -35,12 +35,12 @@ shortUrlRouter.get('/api/shorten', async (req, res): Promise<void> => {
 
 shortUrlRouter.post('/shorten', async (req, res): Promise<void> => {
   let owner: string = 'noOwner'
-  let isLogin:boolean = false
+  let isLogin: boolean = false
   if (req.session.user !== undefined && req.session.user === req.body.owner) {
     owner = req.body.owner
   }
   if (req.session.user === owner && owner !== undefined) {
-    isLogin=true
+    isLogin = true
   }
   let urlInfo: UrlInfo = new UrlInfo(owner, req.body.url)
   urlInfo.getHash()
