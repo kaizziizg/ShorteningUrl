@@ -1,27 +1,16 @@
-import React, { useImperativeHandle, forwardRef } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
 
-function Loading(props, ref) {
-  const [open, setOpen] = React.useState(false);
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleToggle = () => {
-    setOpen(!open);
-  };
-  useImperativeHandle(ref, () => ({
-    handleToggle,
-    handleClose,
-  }));
-
+function Loading(props) {
+  const { controller } = props;
   return (
     <div>
-      {/* <Button onClick={handleToggle}>Show backdrop</Button> */}
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={open}
-        onClick={handleClose}
+        open={controller.openLoading}
+        // onClick={controller.setOpenLoading(false)}
       >
         <CircularProgress color="inherit" />
       </Backdrop>
@@ -29,6 +18,15 @@ function Loading(props, ref) {
   );
 }
 
-// eslint-disable-next-line no-func-assign
-Loading = forwardRef(Loading);
+Loading.propTypes = {
+  controller: PropTypes.shape({
+    openAlert: PropTypes.bool,
+    setOpenAlert: PropTypes.func,
+    setAlertMsg: PropTypes.func,
+    openLoading: PropTypes.bool,
+    setOpenLoading: PropTypes.func,
+
+  }).isRequired,
+};
+
 export default Loading;

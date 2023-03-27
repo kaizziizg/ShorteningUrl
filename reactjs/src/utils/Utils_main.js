@@ -1,8 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies, import/no-unresolved
 import QRCode from 'qrcode';
 
-const CopyURL = () => {
-  navigator.clipboard.writeText(document.querySelector('#shortURL').text);
+const CopyURL = (urlInfo) => {
+  navigator.clipboard.writeText(urlInfo.shortUrl);
 };
 
 const QRCodeGen = (url) => {

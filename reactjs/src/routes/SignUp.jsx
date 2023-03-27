@@ -2,8 +2,7 @@
 /* eslint-disable no-alert */
 import * as React from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-
+import { Link, useOutletContext, useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -13,19 +12,24 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { serverIP, clog } from '../config';
-import Loading from '../components/Loading';
 
 export default function SignUp() {
-  const loadingRef = React.useRef();
-
+  const [controller] = useOutletContext();
+  const navigate = useNavigate();
   const handleLoadingPopup = () => {
-    loadingRef.current.handleToggle();
+    controller.setOpenLoading(true);
   };
   const handleLoadingPopdown = () => {
-    loadingRef.current.handleClose();
+    controller.setOpenLoading(false);
   };
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!document.querySelector('#email').checkValidity()) {
+      controller.setAlertMsg('please re-check your email');
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
+      return;
+    }
     const data = new FormData(event.currentTarget);
     const signData = {
       username: data.get('username'),
@@ -36,10 +40,15 @@ export default function SignUp() {
     axios.post(`${serverIP}/signUp`, signData).then((res) => {
       clog(res.data);
       if (res.data.success === true) {
-        alert('SignUp Success');
-        location.href = '/#/Signin';
+        controller.setAlertMsg('SignUp Success');
+        controller.setAlertState('success');
+        controller.setOpenAlert(true);
+        // location.href = '/#/Signin';
+        navigate('/Signin');
       } else {
-        alert('SignUp Failed,Please Check your email');
+        controller.setAlertMsg('SignUp Failed,Please Check your email');
+        controller.setAlertState('error');
+        controller.setOpenAlert(true);
       }
     }).finally(() => {
       handleLoadingPopdown();
@@ -49,7 +58,6 @@ export default function SignUp() {
   return (
 
     <Container component="main" maxWidth="xs">
-      <Loading ref={loadingRef} />
       <Box
         sx={{
           marginTop: 8,
@@ -85,6 +93,7 @@ export default function SignUp() {
                 label="Email Address"
                 name="email"
                 autoComplete="email"
+                type="email"
               />
             </Grid>
             <Grid item xs={12}>

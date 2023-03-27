@@ -2,8 +2,7 @@
 /* eslint-disable no-restricted-globals */
 import * as React from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
-
+import { Link, useOutletContext, useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -15,19 +14,24 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { serverIP, clog } from '../config';
-import Loading from '../components/Loading';
 
 export default function SignIn() {
-  const loadingRef = React.useRef();
-
+  const [controller] = useOutletContext();
+  const navigate = useNavigate();
   const handleLoadingPopup = () => {
-    loadingRef.current.handleToggle();
+    controller.setOpenLoading(true);
   };
   const handleLoadingPopdown = () => {
-    loadingRef.current.handleClose();
+    controller.setOpenLoading(false);
   };
   const handleSubmit = (event) => {
     event.preventDefault();
+    if (!document.querySelector('#email').checkValidity()) {
+      controller.setAlertMsg('please re-check your email');
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
+      return;
+    }
     const data = new FormData(event.currentTarget);
     const signData = {
       email: data.get('email'),
@@ -37,10 +41,15 @@ export default function SignIn() {
     axios.post(`${serverIP}/signIn`, signData, { withCredentials: true }).then((res) => {
       clog(res.data);
       if (res.data.success === true) {
-        alert('Login Success');
-        location.href = '/';
+        controller.setAlertMsg('Login Success');
+        controller.setAlertState('success');
+        controller.setOpenAlert(true);
+        // location.href = '/';
+        navigate('/');
       } else {
-        alert('Login Failed,Please Re-Check your email&password');
+        controller.setAlertMsg('Login Failed,Please Re-Check your email&password');
+        controller.setAlertState('error');
+        controller.setOpenAlert(true);
       }
     }).finally(() => {
       handleLoadingPopdown();
@@ -50,7 +59,6 @@ export default function SignIn() {
   return (
 
     <Container component="main" maxWidth="xs">
-      <Loading ref={loadingRef} />
       <Box
         sx={{
           marginTop: 8,
@@ -75,6 +83,7 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            type="email"
           />
           <TextField
             margin="normal"

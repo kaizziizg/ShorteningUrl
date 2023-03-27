@@ -1,6 +1,7 @@
 import * as React from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import PropTypes from 'prop-types';
+import { useOutletContext } from 'react-router-dom';
 import {
   Container, Typography, Button, Box, TextField,
   Tab, Tabs, Paper,
@@ -11,7 +12,6 @@ import cookie from 'cookie';
 import UrlInfo from '../components/main/UrlInfo';
 import { CopyURL } from '../utils/Utils_main';
 import { serverIP, clog } from '../config';
-import Loading from '../components/Loading';
 import TypingTitle from '../components/main/TypingTitle';
 import { SubTitle } from '../components/main/Titles';
 import QRCode from '../components/QRCode';
@@ -40,6 +40,7 @@ TabPanel.propTypes = {
   index: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
 };
+
 function resultTabs(urlInfo) {
   const [value, setValue] = React.useState(0);
 
@@ -79,7 +80,7 @@ function resultTabs(urlInfo) {
               width: '30%',
               margin: 'auto',
             }}
-            onClick={CopyURL}
+            onClick={() => { CopyURL(urlInfo); }}
           >
             Copy URL
           </Button>
@@ -108,15 +109,21 @@ function resultTabs(urlInfo) {
 
 export default function Main() {
   const [urlInfo, setUrlInfo] = React.useState(new UrlInfo());
-  const loadingRef = React.useRef();
-
+  const [controller] = useOutletContext();
   const handleLoadingPopup = () => {
-    loadingRef.current.handleToggle();
+    controller.setOpenLoading(true);
   };
   const handleLoadingPopdown = () => {
-    loadingRef.current.handleClose();
+    controller.setOpenLoading(false);
   };
+
   const getShortenURL = () => {
+    if (!document.querySelector('#url').checkValidity()) {
+      controller.setAlertMsg('please re-check your url');
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
+      return;
+    }
     const cookies = cookie.parse(document.cookie);
     const data = { url: document.querySelector('#url').value, owner: cookies.username };
     urlInfo.shortUrl = 'Process...';
@@ -126,22 +133,27 @@ export default function Main() {
       .then((response) => {
         clog(response.data);
         setUrlInfo(response.data.urlInfo);
+        controller.setAlertMsg('successfully generated');
+        controller.setAlertState('success');
+        controller.setOpenAlert(true);
+        document.querySelector('.resultPaper').style.visibility = 'visible';
       })
       .catch((error) => {
         clog(error);
+        controller.setAlertMsg('something error happend');
+        controller.setAlertState('error');
+        controller.setOpenAlert(true);
       }).finally(() => {
         handleLoadingPopdown();
-        document.querySelector('.resultPaper').style.visibility = 'visible';
       });
   };
   return (
     <>
-      <Loading ref={loadingRef} />
       <Box height="30%" display="flex" flexDirection="column" textAlign="center">
         <Container disableGutters maxWidth="md" component="main" sx={{ pt: 15, pb: 6 }}>
           <TypingTitle />
           <form className="URLform" noValidate autoComplete="off">
-            <TextField name="url" id="url" label="input your URL here!!" fullWidth />
+            <TextField type="url" name="url" id="url" label="input your URL here!!" fullWidth />
           </form>
           <br />
           <Button variant="contained" color="primary" onClick={getShortenURL}>

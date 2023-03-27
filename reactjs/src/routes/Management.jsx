@@ -4,6 +4,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import * as React from 'react';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import cookie from 'cookie';
 import {
@@ -18,7 +19,6 @@ import Paper from '@mui/material/Paper';
 import { serverIP, clog } from '../config';
 import EnhancedTableHead from '../components/EnhancedTableHead';
 import DialogYesNo from '../components/DialogYesNo';
-import Loading from '../components/Loading';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -44,14 +44,15 @@ function updateObjectKey(obj, key, value) {
 }
 
 export default function Management() {
-  const loadingRef = React.useRef();
-
+  const [controller] = useOutletContext();
+  const navigate = useNavigate();
   const handleLoadingPopup = () => {
-    loadingRef.current.handleToggle();
+    controller.setOpenLoading(true);
   };
   const handleLoadingPopdown = () => {
-    loadingRef.current.handleClose();
+    controller.setOpenLoading(false);
   };
+
   const cookies = cookie.parse(document.cookie);
   const [datas, setData] = React.useState(null);
   const [order, setOrder] = React.useState('asc');
@@ -116,10 +117,14 @@ export default function Management() {
     axios.post(`${serverIP}/delectUrl`, deleteData).then((res) => {
       clog(res.data);
     }).catch((err) => {
-      document.location.href = `${serverIP}/logout`;
+      controller.setAlertMsg('Authorization Error');
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
+      // setTimeout(() => { document.location.href = `${serverIP}/logout`; }, 3000);
+      navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
-      location.reload();
+      navigate('/Management');
     });
   };
   const handleUpdate = (event) => {
@@ -136,7 +141,11 @@ export default function Management() {
     axios.post(`${serverIP}/updateUrl`, updateData).then((res) => {
       clog(res.data);
     }).catch((err) => {
-      document.location.href = `${serverIP}/logout`;
+      controller.setAlertMsg('Authorization Error');
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
+      // setTimeout(() => { document.location.href = `${serverIP}/logout`; }, 3000);
+      navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
     });
@@ -161,10 +170,15 @@ export default function Management() {
     axios.post(`${serverIP}/refreshUrl`, refreshData).then((res) => {
       clog(res.data);
     }).catch((err) => {
-      document.location.href = `${serverIP}/logout`;
+      controller.setAlertMsg('Authorization Error');
+      controller.setAlertState('error');
+      controller.setOpenAlert(true);
+      // setTimeout(() => { document.location.href = `${serverIP}/logout`; }, 3000);
+      navigate('/Logout');
     }).finally(() => {
       handleLoadingPopdown();
-      location.reload();
+      // location.reload();
+      navigate('/Management');
     });
   };
   const isSelected = (name) => selected.indexOf(name) !== -1;
@@ -182,7 +196,7 @@ export default function Management() {
   const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - datas.length) : 0;
 
   React.useEffect(() => {
-    // handleLoadingPopup();
+    handleLoadingPopup();
     axios.get(`${serverIP}/api/shortUrls`, { params: { username: cookies.username } }).then((res) => {
       setData(res.data);
       clog(res.data);
@@ -201,7 +215,6 @@ export default function Management() {
 
   return (
     <Box sx={{ width: '80%', margin: 'auto' }}>
-      <Loading ref={loadingRef} />
       <Box sx={{
         width: '100%', mt: 2, display: 'flex',
       }}
